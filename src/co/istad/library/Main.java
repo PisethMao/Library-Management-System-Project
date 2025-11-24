@@ -1,5 +1,7 @@
 package co.istad.library;
 
+import co.istad.library.service.BookService;
+import co.istad.library.service.BookServiceImpl;
 import co.istad.library.util.Color;
 import co.istad.library.util.ViewUtil;
 
@@ -8,6 +10,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
+        BookService bookService = new BookServiceImpl();
         ViewUtil.printBanner();
         while (true) {
             ViewUtil.showMainMenu();
@@ -16,7 +19,7 @@ public class Main {
             switch (choice) {
                 case "1" -> {
                     System.out.println(Color.BOLD_CYAN + "📘 Book Management Selected" + Color.RESET);
-                    ViewUtil.bookMenuLoop(input);
+                    ViewUtil.bookMenuLoop(input, bookService);
                 }
                 case "2" ->
                         System.out.println(Color.BOLD_GREEN + "🧑‍🤝‍🧑 You selected: Member Management" + Color.RESET);
