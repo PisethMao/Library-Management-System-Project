@@ -1,5 +1,6 @@
 package co.istad.library.util;
 
+import co.istad.library.service.BookService;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.Table;
@@ -44,19 +45,26 @@ public class ViewUtil {
         System.out.println(table.render());
     }
 
-    public static void bookMenuLoop(Scanner input) {
+    public static void bookMenuLoop(Scanner input, BookService bookService) {
+        BookView bookView = new BookView(bookService, new InputValidator(input));
         while (true) {
             showBookMenu();
             System.out.print(Color.BOLD_CYAN + "👉 Enter your choice (1-6): " + Color.RESET);
             String choice = input.nextLine();
             switch (choice) {
-                case "1" -> System.out.println(Color.BOLD_GREEN + "➕ Add New Books (no logic yet)" + Color.RESET);
+                case "1" -> {
+                    System.out.println(Color.BOLD_GREEN + "➕ Add New Books" + Color.RESET);
+                    bookView.addNewBook();
+                }
                 case "2" ->
                         System.out.println(Color.BOLD_BLUE + "✏️ Update Book Information (no logic yet)" + Color.RESET);
                 case "3" -> System.out.println(Color.BOLD_RED + "🗑️ Delete Book (no logic yet)" + Color.RESET);
                 case "4" -> System.out.println(Color.BOLD_PURPLE + "🔍 Search Books (no logic yet)" + Color.RESET);
-                case "5" ->
-                        System.out.println(Color.BOLD_YELLOW + "📄 Display/List All Books (no logic yet)" + Color.RESET);
+                case "5" -> {
+                    System.out.println(Color.BOLD_YELLOW + "📄 Display/List All Books" + Color.RESET);
+                    bookView.navigatePagination();
+                    continue;
+                }
                 case "6" -> {
                     System.out.println(Color.BOLD_CYAN + "🔙 Returning to Main Menu..." + Color.RESET);
                     return;
