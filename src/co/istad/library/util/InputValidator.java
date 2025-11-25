@@ -47,4 +47,49 @@ public record InputValidator(Scanner input) {
             }
         }
     }
+
+    public String readOptionalText(String oldValue, String message) {
+        while (true) {
+            System.out.print(message + "(" + oldValue + "): ");
+            String txt = input.nextLine().trim();
+            if (txt.isEmpty()) {
+                return oldValue;
+            }
+            if (!txt.matches("[A-Za-z ]+")) {
+                System.out.println(Color.RED + "❌ Only letters allowed!" + Color.RESET);
+                continue;
+            }
+            return txt;
+        }
+    }
+
+    public int readOptionalInt(int oldValue, String message) {
+        while (true) {
+            System.out.print(message + "(" + oldValue + "): ");
+            String txt = input.nextLine().trim();
+            if (txt.isEmpty()) {
+                return oldValue;
+            }
+            try {
+                return Integer.parseInt(txt);
+            } catch (NumberFormatException e) {
+                System.out.println(Color.RED + "❌ Please enter a valid number" + Color.RESET);
+            }
+        }
+    }
+
+    public String readOptionalIsbn(String oldValue, String message) {
+        while (true) {
+            System.out.print(message + "(" + oldValue + "): ");
+            String txt = input.nextLine().trim();
+            if (txt.isEmpty()) {
+                return oldValue;
+            }
+            if (!txt.matches("\\d{5,20}+")) {
+                System.out.println(Color.RED + "❌ ISBN must be 5-20 digits!" + Color.RESET);
+                continue;
+            }
+            return txt;
+        }
+    }
 }

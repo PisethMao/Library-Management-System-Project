@@ -9,6 +9,7 @@ import org.nocrala.tools.texttablefmt.Table;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * @param bookService I comment on these two lines because I want BookView class to use the SAME Scanner and the SAME BookService that are created in Main, instead of creating new ones.
@@ -73,7 +74,7 @@ public record BookView(BookService bookService, InputValidator inputValidator) {
         Scanner input = new Scanner(System.in);
         while (true) {
             displayBooksPage();
-            System.out.print(Color.BOLD_CYAN + "👉 Use ← → arrows OR type 1/2/3. Press ENTER to exit. " + Color.RESET);
+            System.out.print(Color.BOLD_CYAN + "👉 Type 1/2/3. Press ENTER to exit. " + Color.RESET);
             String line = input.nextLine().trim();
             int totalPages = (int) Math.ceil((double) bookService.getAllBooks().size() / PAGE_SIZE);
             if (line.isEmpty()) {
@@ -100,5 +101,128 @@ public record BookView(BookService bookService, InputValidator inputValidator) {
         Book newBook = new Book(title, author, category, isbn, year, quantity);
         bookService.addBook(newBook);
         System.out.println(Color.BOLD_YELLOW + "✅ Book added successfully!" + Color.RESET);
+    }
+
+    public void updateBookInfo() {
+        System.out.print(Color.BOLD_CYAN + "🔍 Enter Book ID to update: " + Color.RESET);
+        String id = inputValidator.input().nextLine().trim();
+        Book existing = bookService.findId(id);
+        if (existing == null) {
+            System.out.println(Color.BOLD_RED + "❌ Book not found with ID: " + id + Color.RESET);
+            return;
+        }
+        System.out.println(Color.GREEN + "✅ Found: " + existing.getTitle() + Color.RESET);
+        System.out.println(Color.YELLOW + "(Press ENTER to keep the old value)" + Color.RESET);
+        String newTitle = inputValidator.readOptionalText(existing.getTitle(), Color.GREEN + "📖 Title ");
+        String newAuthor = inputValidator.readOptionalText(existing.getAuthor(), Color.GREEN + "✍️ Author ");
+        String newCategory = inputValidator.readOptionalText(existing.getCategory(), Color.GREEN + "📚️ Category ");
+        String newIsbn = inputValidator.readOptionalIsbn(existing.getIsbn(), Color.GREEN + "🔢 ISBN ");
+        int newYear = inputValidator.readOptionalInt(existing.getYear(), Color.GREEN + "📅 Publish year ");
+        int newQty = inputValidator.readOptionalInt(existing.getQuantity(), Color.GREEN + "📦 Quantity ");
+        existing.setTitle(newTitle);
+        existing.setAuthor(newAuthor);
+        existing.setCategory(newCategory);
+        existing.setIsbn(newIsbn);
+        existing.setYear(newYear);
+        existing.setQuantity(newQty);
+        bookService.update(existing);
+        System.out.println(Color.GREEN + "✅ Book updated successfully!" + Color.RESET);
+    }
+
+    public void deleteBook() {
+        System.out.print(Color.CYAN + "🗑️ Enter Book ID to delete: " + Color.RESET);
+        String id = inputValidator.input().nextLine().trim();
+        Book existing = bookService.findId(id);
+        if (existing == null) {
+            System.out.println(Color.BOLD_RED + "❌ No book found with ID: " + id + Color.RESET);
+            return;
+        }
+        System.out.println(Color.YELLOW + "⚠️ You are about to delete this book: " + Color.RESET);
+        System.out.println("📖 Title: " + existing.getTitle());
+        System.out.println("✍️ Author: " + existing.getAuthor());
+        System.out.println("📚️ Category: " + existing.getCategory());
+        System.out.println("🔢 ISBN: " + existing.getIsbn());
+        System.out.println("📅 Year: " + existing.getYear());
+        System.out.println("📦 Quantity: " + existing.getQuantity() + Color.RESET);
+        System.out.print(Color.RED + "❗Type YES to confirm delete: " + Color.RESET);
+        Set<String> ok = Set.of("yes", "y");
+        String confirm = inputValidator.input().nextLine().trim();
+        if (!ok.contains(confirm.toLowerCase())) {
+            System.out.println(Color.YELLOW + "❎ Delete cancelled." + Color.RESET);
+            return;
+        }
+        boolean deleted = bookService.delete(id);
+        if (deleted) {
+            System.out.println(Color.BOLD_GREEN + "✅ Book deleted successfully!" + Color.RESET);
+        } else {
+            System.out.println(Color.RED + "❌ Failed to delete book." + Color.RESET);
+        }
+    }
+
+    public void displaySearchResults(List<Book> results) {
+        Table table = new Table(7, BorderStyle.UNICODE_ROUND_BOX_WIDE, ShownBorders.ALL);
+        CellStyle header = new CellStyle(CellStyle.HorizontalAlign.center);
+        table.addCell(Color.BOLD_CYAN + "ID (UUID)" + Color.RESET, header);
+        table.addCell(Color.BOLD_CYAN + "Title" + Color.RESET, header);
+        table.addCell(Color.BOLD_CYAN + "Author" + Color.RESET, header);
+        table.addCell(Color.BOLD_CYAN + "Category" + Color.RESET, header);
+        table.addCell(Color.BOLD_CYAN + "ISBN" + Color.RESET, header);
+        table.addCell(Color.BOLD_CYAN + "Publish Year" + Color.RESET, header);
+        table.addCell(Color.BOLD_CYAN + "Quantity" + Color.RESET, header);
+        for (Book b : results) {
+            table.addCell(b.getId(), header);
+            table.addCell(b.getTitle(), header);
+            table.addCell(b.getAuthor(), header);
+            table.addCell(b.getCategory(), header);
+            table.addCell(b.getIsbn(), header);
+            table.addCell(String.valueOf(b.getYear()), header);
+            table.addCell(String.valueOf(b.getQuantity()), header);
+        }
+        System.out.println(table.render());
+    }
+
+    public void searchBooks() {
+        while (true) {
+            System.out.println(Color.CYAN + "🔍 Search Books" + Color.RESET);
+            ViewUtil.showSearchMenu();
+            System.out.print(Color.YELLOW + "👉 Enter your choice (1-5): " + Color.RESET);
+            String choice = inputValidator.input().nextLine().trim();
+            List<Book> results;
+            switch (choice) {
+                case "1" -> {
+                    String title = inputValidator.readText(Color.GREEN + "📖 Enter title to search: " + Color.RESET);
+                    results = bookService.searchByTitle(title);
+                }
+                case "2" -> {
+                    String author = inputValidator.readText(Color.GREEN + "✍️ Enter author to search: " + Color.RESET);
+                    results = bookService.searchByAuthor(author);
+                }
+                case "3" -> {
+                    String category = inputValidator.readText(Color.GREEN + "📚️ Enter category to search: " + Color.RESET);
+                    results = bookService.searchByCategory(category);
+                }
+                case "4" -> {
+                    String isbn = inputValidator.readIsbn(Color.GREEN + "🔢 Enter ISBN to search: " + Color.RESET);
+                    results = bookService.searchByIsbn(isbn);
+                }
+                case "5" -> {
+                    System.out.println(Color.BOLD_CYAN + "🔙 Back to Book Menu" + Color.RESET);
+                    return;
+                }
+                default -> {
+                    System.out.println(Color.BOLD_RED + "⚠️ Invalid choice." + Color.RESET);
+                    continue;
+                }
+            }
+            if (results.isEmpty()) {
+                System.out.println(Color.RED + "❌ No book founds." + Color.RESET);
+                System.out.println(Color.YELLOW + "⚡ Press ENTER to continue..." + Color.RESET);
+                inputValidator.input().nextLine();
+                continue;
+            }
+            displaySearchResults(results);
+            System.out.println(Color.YELLOW + "⚡ Press ENTER to continue..." + Color.RESET);
+            inputValidator.input().nextLine();
+        }
     }
 }

@@ -10,5 +10,19 @@ public interface BookService {
     List<Book> getAllBooks();
 
     // I use isEmpty() function in book service because we must check the book list has no books before we try to display a table.
-    boolean isEmpty();
+//    boolean isEmpty();
+
+    Book findId(String id);
+
+    void update(Book updatedBook);
+
+    boolean delete(String id);
+
+    List<Book> searchByTitle(String title);
+
+    List<Book> searchByAuthor(String author);
+
+    List<Book> searchByCategory(String category);
+
+    List<Book> searchByIsbn(String isbn);
 }

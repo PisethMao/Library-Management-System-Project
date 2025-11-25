@@ -27,8 +27,57 @@ public class BookServiceImpl implements BookService {
         return books;
     }
 
+
     @Override
-    public boolean isEmpty() {
-        return books.isEmpty();
+    public Book findId(String id) {
+        for (Book book : books) {
+            if (book.getId().equalsIgnoreCase(id.trim())) {
+                return book;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void update(Book updatedBook) {
+        for (int i = 0; i < books.size(); i++) {
+            if (books.get(i).getId().equalsIgnoreCase(updatedBook.getId())) {
+                books.set(i, updatedBook);
+                return;
+            }
+        }
+    }
+
+    @Override
+    public boolean delete(String id) {
+        return books.removeIf(book -> book.getId().equalsIgnoreCase(id.trim()));
+    }
+
+    @Override
+    public List<Book> searchByTitle(String title) {
+        return books.stream()
+                .filter(b -> b.getTitle().toLowerCase().contains(title.toLowerCase()))
+                .toList();
+    }
+
+    @Override
+    public List<Book> searchByAuthor(String author) {
+        return books.stream()
+                .filter(b -> b.getAuthor().toLowerCase().contains(author.toLowerCase()))
+                .toList();
+    }
+
+    @Override
+    public List<Book> searchByCategory(String category) {
+        return books.stream()
+                .filter(b -> b.getCategory().toLowerCase().contains(category.toLowerCase()))
+                .toList();
+    }
+
+    @Override
+    public List<Book> searchByIsbn(String isbn) {
+        return books.stream()
+                .filter(b -> b.getIsbn().contains(isbn))
+                .toList();
     }
 }
