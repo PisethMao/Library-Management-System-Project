@@ -45,6 +45,18 @@ public class ViewUtil {
         System.out.println(table.render());
     }
 
+    public static void showSearchMenu() {
+        Table table = new Table(1, BorderStyle.UNICODE_ROUND_BOX_WIDE);
+        CellStyle titleStyle = new CellStyle(CellStyle.HorizontalAlign.center);
+        table.addCell(Color.BOLD_CYAN + "SEARCH BOOKS" + Color.RESET, titleStyle);
+        table.addCell(Color.YELLOW + "1. Search by Title" + Color.RESET);
+        table.addCell(Color.YELLOW + "2. Search by Author" + Color.RESET);
+        table.addCell(Color.YELLOW + "3. Search by Category" + Color.RESET);
+        table.addCell(Color.YELLOW + "4. Search by ISBN" + Color.RESET);
+        table.addCell(Color.BOLD_RED + "5. Back to Main Menu" + Color.RESET);
+        System.out.println(table.render());
+    }
+
     public static void bookMenuLoop(Scanner input, BookService bookService) {
         BookView bookView = new BookView(bookService, new InputValidator(input));
         while (true) {
@@ -56,10 +68,20 @@ public class ViewUtil {
                     System.out.println(Color.BOLD_GREEN + "➕ Add New Books" + Color.RESET);
                     bookView.addNewBook();
                 }
-                case "2" ->
-                        System.out.println(Color.BOLD_BLUE + "✏️ Update Book Information (no logic yet)" + Color.RESET);
-                case "3" -> System.out.println(Color.BOLD_RED + "🗑️ Delete Book (no logic yet)" + Color.RESET);
-                case "4" -> System.out.println(Color.BOLD_PURPLE + "🔍 Search Books (no logic yet)" + Color.RESET);
+                case "2" -> {
+                    System.out.println(Color.BOLD_BLUE + "✏️ Update Book Information" + Color.RESET);
+                    bookView.updateBookInfo();
+                }
+                case "3" -> {
+                    System.out.println(Color.BOLD_RED + "🗑️ Delete Book" + Color.RESET);
+                    bookView.deleteBook();
+                }
+                case "4" -> {
+                    System.out.println(Color.BOLD_PURPLE + "🔍 Search Books" + Color.RESET);
+                    ViewUtil.showSearchMenu();
+                    bookView.searchBooks();
+                    continue;
+                }
                 case "5" -> {
                     System.out.println(Color.BOLD_YELLOW + "📄 Display/List All Books" + Color.RESET);
                     bookView.navigatePagination();
