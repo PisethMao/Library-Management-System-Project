@@ -10,10 +10,10 @@ public class BookServiceImpl implements BookService {
 
     public BookServiceImpl() {
         books.add(new Book("The Great Gatsby", "F. Scott Fitzgerald", "Novel", "1234567890", 1925, 10));
-        books.add(new Book("1984", "George Orwell", "Dystopian", "0987654321", 1949, 5));
+        books.add(new Book("The Great Gatsby", "George Orwell", "Dystopian", "0987654321", 1949, 5));
         books.add(new Book("The Lord of the Rings", "J. R. R. Tolkien", "Novel", "978-0-345-33322-2", 1954, 10));
         books.add(new Book("The Great Gatsby", "F. Scott Fitzgerald", "Novel", "1234567890", 1925, 10));
-        books.add(new Book("1984", "George Orwell", "Dystopian", "0987654321", 1949, 5));
+        books.add(new Book("The Lord of the Rings", "George Orwell", "Dystopian", "0987654321", 1949, 5));
         books.add(new Book("The Lord of the Rings", "J. R. R. Tolkien", "Novel", "978-0-345-33322-2", 1954, 10));
     }
 
@@ -78,6 +78,62 @@ public class BookServiceImpl implements BookService {
     public List<Book> searchByIsbn(String isbn) {
         return books.stream()
                 .filter(b -> b.getIsbn().contains(isbn))
+                .toList();
+    }
+
+    @Override
+    public List<Book> sortBooksByTitleAsc() {
+        return books.stream()
+                .sorted((a, b) -> a.getTitle().compareToIgnoreCase(b.getTitle()))
+                .toList();
+    }
+
+    @Override
+    public List<Book> sortBooksByTitleDesc() {
+        return books.stream()
+                .sorted((a, b) -> b.getTitle().compareToIgnoreCase(a.getTitle()))
+                .toList();
+    }
+
+    @Override
+    public List<Book> sortBooksByAuthorAsc() {
+        return books.stream()
+                .sorted((a, b) -> a.getAuthor().compareToIgnoreCase(b.getAuthor()))
+                .toList();
+    }
+
+    @Override
+    public List<Book> sortBooksByAuthorDesc() {
+        return books.stream()
+                .sorted((a, b) -> b.getAuthor().compareToIgnoreCase(a.getAuthor()))
+                .toList();
+    }
+
+    @Override
+    public List<Book> sortBooksByCategoryAsc() {
+        return books.stream()
+                .sorted((a, b) -> a.getCategory().compareToIgnoreCase(b.getCategory()))
+                .toList();
+    }
+
+    @Override
+    public List<Book> sortBooksByCategoryDesc() {
+        return books.stream()
+                .sorted((a, b) -> b.getCategory().compareToIgnoreCase(a.getCategory()))
+                .toList();
+    }
+
+    @Override
+    public List<Book> sortBooksByPublishYearAsc() {
+        return books.stream()
+                .sorted((a, b) -> Integer.compare(a.getYear(), b.getYear()))
+                .toList();
+    }
+
+    @Override
+    public List<Book> sortBooksByPublishYearDesc() {
+        return books.stream()
+                .sorted((a, b) -> Integer.compare(b.getYear(), a.getYear()))
                 .toList();
     }
 }

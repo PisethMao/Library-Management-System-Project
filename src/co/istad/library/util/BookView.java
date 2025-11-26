@@ -23,6 +23,22 @@ public record BookView(BookService bookService, InputValidator inputValidator) {
     private static final int PAGE_SIZE = 5;
     private static int currentPage = 1;
 
+    private static Table getTable() {
+        Table table = new Table(2, BorderStyle.UNICODE_ROUND_BOX_WIDE, ShownBorders.ALL);
+        CellStyle center = new CellStyle(CellStyle.HorizontalAlign.center);
+        table.addCell(Color.CYAN + "SORT OPTIONS" + Color.RESET, center, 2);
+        table.addCell(Color.GREEN + "1. Title (A → Z)" + Color.RESET);
+        table.addCell(Color.GREEN + "2. Title (Z → A)" + Color.RESET);
+        table.addCell(Color.YELLOW + "3. Author (A → Z)" + Color.RESET);
+        table.addCell(Color.YELLOW + "4. Author (Z → A)" + Color.RESET);
+        table.addCell(Color.YELLOW + "5. Category (A → Z)" + Color.RESET);
+        table.addCell(Color.YELLOW + "6. Category (Z → A)" + Color.RESET);
+        table.addCell(Color.PURPLE + "7. Year (Newest → Oldest)" + Color.RESET);
+        table.addCell(Color.PURPLE + "8. Year (Oldest → Newest)" + Color.RESET);
+        table.addCell(Color.RED + "9. Back to Book Menu" + Color.RESET, center, 2);
+        return table;
+    }
+
     private Table buildPageTable(List<Book> books, int startIndex, int endIndex) {
         Table table = new Table(7, BorderStyle.UNICODE_ROUND_BOX_WIDE, ShownBorders.ALL);
         CellStyle center = new CellStyle(CellStyle.HorizontalAlign.center);
@@ -224,5 +240,91 @@ public record BookView(BookService bookService, InputValidator inputValidator) {
             System.out.println(Color.YELLOW + "⚡ Press ENTER to continue..." + Color.RESET);
             inputValidator.input().nextLine();
         }
+    }
+
+    private List<Book> showSortMenu() {
+        Scanner input = inputValidator.input();
+        while (true) {
+            Table table = getTable();
+            System.out.println(table.render());
+            System.out.print(Color.BOLD_CYAN + "👉 Enter your choice (1-9): " + Color.RESET);
+            String choice = input.nextLine().trim();
+            switch (choice) {
+                case "1" -> {
+                    return bookService.sortBooksByTitleAsc();
+                }
+                case "2" -> {
+                    return bookService.sortBooksByTitleDesc();
+                }
+                case "3" -> {
+                    return bookService.sortBooksByAuthorAsc();
+                }
+                case "4" -> {
+                    return bookService.sortBooksByAuthorDesc();
+                }
+                case "5" -> {
+                    return bookService.sortBooksByCategoryAsc();
+                }
+                case "6" -> {
+                    return bookService.sortBooksByCategoryDesc();
+                }
+                case "7" -> {
+                    return bookService.sortBooksByPublishYearDesc();
+                }
+                case "8" -> {
+                    return bookService.sortBooksByPublishYearAsc();
+                }
+                case "9" -> {
+                    return null;
+                }
+                default -> System.out.println(Color.BOLD_RED + "⚠️ Invalid choice." + Color.RESET);
+            }
+        }
+    }
+
+    public void paginateSortedBooks(List<Book> sortedBooks) {
+        int totalBooks = sortedBooks.size();
+        int totalPages = (int) Math.ceil((double) totalBooks / PAGE_SIZE);
+        if (totalPages == 0) {
+            System.out.println(Color.RED + "⚠️ No books available!" + Color.RESET);
+            return;
+        }
+        Scanner input = inputValidator.input();
+        while (true) {
+            int startIndex = (currentPage - 1) * PAGE_SIZE;
+            int endIndex = Math.min(startIndex + PAGE_SIZE, totalBooks);
+            Table table = buildPageTable(sortedBooks, startIndex, endIndex);
+            System.out.println(table.render());
+            System.out.println(Color.BOLD_CYAN + "📄 Page " + currentPage + " of " + totalPages + Color.RESET);
+            System.out.println(Color.BOLD_YELLOW + "1. Next Page | 2. Previous Page | 3. Change Sort | 4. Exit" + Color.RESET);
+            System.out.print(Color.GREEN + "👉 Enter your choice: " + Color.RESET);
+            String choice = input.nextLine().trim();
+            switch (choice) {
+                case "1" -> currentPage = Math.min(currentPage + 1, totalPages);
+                case "2" -> currentPage = Math.max(currentPage - 1, 1);
+                case "3" -> {
+                    currentPage = 1;
+                    sortedBooks = showSortMenu();
+                    if (sortedBooks == null) {
+                        return;
+                    }
+                    totalBooks = sortedBooks.size();
+                    totalPages = (int) Math.ceil((double) totalBooks / PAGE_SIZE);
+                }
+                case "4" -> {
+                    return;
+                }
+                default -> System.out.println(Color.RED + "⚠️ Invalid input." + Color.RESET);
+            }
+        }
+    }
+
+    public void displaySortedBooks() {
+        List<Book> sortedBooks = showSortMenu();
+        if (sortedBooks == null) {
+            return;
+        }
+        currentPage = 1;
+        paginateSortedBooks(sortedBooks);
     }
 }
