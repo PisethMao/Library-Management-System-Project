@@ -25,4 +25,20 @@ public interface BookService {
     List<Book> searchByCategory(String category);
 
     List<Book> searchByIsbn(String isbn);
+
+    List<Book> sortBooksByTitleAsc();
+
+    List<Book> sortBooksByTitleDesc();
+
+    List<Book> sortBooksByAuthorAsc();
+
+    List<Book> sortBooksByAuthorDesc();
+
+    List<Book> sortBooksByCategoryAsc();
+
+    List<Book> sortBooksByCategoryDesc();
+
+    List<Book> sortBooksByPublishYearAsc();
+
+    List<Book> sortBooksByPublishYearDesc();
 }

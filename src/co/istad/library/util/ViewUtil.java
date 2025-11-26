@@ -41,7 +41,8 @@ public class ViewUtil {
         table.addCell(Color.YELLOW + "3. Delete Book" + Color.RESET);
         table.addCell(Color.YELLOW + "4. Search Books" + Color.RESET);
         table.addCell(Color.YELLOW + "5. Display/List all Books" + Color.RESET);
-        table.addCell(Color.BOLD_RED + "6. Back to Main Menu" + Color.RESET);
+        table.addCell(Color.YELLOW + "6. Sort Books" + Color.RESET);
+        table.addCell(Color.BOLD_RED + "7. Back to Main Menu" + Color.RESET);
         System.out.println(table.render());
     }
 
@@ -62,7 +63,7 @@ public class ViewUtil {
         while (true) {
             showBookMenu();
             System.out.print(Color.BOLD_CYAN + "👉 Enter your choice (1-6): " + Color.RESET);
-            String choice = input.nextLine();
+            String choice = input.nextLine().trim();
             switch (choice) {
                 case "1" -> {
                     System.out.println(Color.BOLD_GREEN + "➕ Add New Books" + Color.RESET);
@@ -88,6 +89,10 @@ public class ViewUtil {
                     continue;
                 }
                 case "6" -> {
+                    System.out.println(Color.BOLD_YELLOW + "🔽 Sort Books" + Color.RESET);
+                    bookView.displaySortedBooks();
+                }
+                case "7" -> {
                     System.out.println(Color.BOLD_CYAN + "🔙 Returning to Main Menu..." + Color.RESET);
                     return;
                 }
