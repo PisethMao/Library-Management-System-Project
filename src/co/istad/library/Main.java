@@ -23,8 +23,10 @@ public class Main {
                 }
                 case "2" ->
                         System.out.println(Color.BOLD_GREEN + "🧑‍🤝‍🧑 You selected: Member Management" + Color.RESET);
-                case "3" ->
-                        System.out.println(Color.BOLD_YELLOW + "🔄️ You selected: Borrow & Return System" + Color.RESET);
+                case "3" -> {
+                    System.out.println(Color.BOLD_YELLOW + "🔄️ You selected: Borrow & Return System" + Color.RESET);
+                    ViewUtil.borrowBookLoop(input, bookService);
+                }
                 case "4" -> System.out.println(Color.BOLD_PURPLE + "📜 You selected: Activity Logs" + Color.RESET);
                 case "5" -> System.out.println(Color.BOLD_BLUE + "📊 You selected: Reports & Dashboards" + Color.RESET);
                 case "6" -> {
@@ -32,7 +34,9 @@ public class Main {
                     // The return statement in this code is used to exit the main method.
                     return;
                 }
-                default -> System.out.println(Color.RED + "⚠️ Invalid choice, Please try again" + Color.RESET);
+                default -> {
+                    System.out.println(Color.RED + "⚠️ Invalid choice, Please try again" + Color.RESET);
+                }
             }
             System.out.println(Color.YELLOW + "⚡ Press ENTER to continue..." + Color.RESET);
             input.nextLine();

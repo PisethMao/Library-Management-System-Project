@@ -90,7 +90,7 @@ public record BookView(BookService bookService, InputValidator inputValidator) {
         Scanner input = new Scanner(System.in);
         while (true) {
             displayBooksPage();
-            System.out.print(Color.BOLD_CYAN + "👉 Type 1/2/3. Press ENTER to exit. " + Color.RESET);
+            System.out.print(Color.BOLD_CYAN + "👉 Type 1/2/3. Press ENTER to exit. Enter: " + Color.RESET);
             String line = input.nextLine().trim();
             int totalPages = (int) Math.ceil((double) bookService.getAllBooks().size() / PAGE_SIZE);
             if (line.isEmpty()) {
