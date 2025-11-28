@@ -2,6 +2,8 @@ package co.istad.library;
 
 import co.istad.library.service.BookService;
 import co.istad.library.service.BookServiceImpl;
+import co.istad.library.service.MemberService;
+import co.istad.library.service.MemberServiceImpl;
 import co.istad.library.util.Color;
 import co.istad.library.util.ViewUtil;
 
@@ -11,6 +13,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
         BookService bookService = new BookServiceImpl();
+        MemberService memberService = new MemberServiceImpl();
         ViewUtil.printBanner();
         while (true) {
             ViewUtil.showMainMenu();
@@ -27,6 +30,12 @@ public class Main {
                     System.out.println(Color.BOLD_YELLOW + "🔄️ You selected: Borrow & Return System" + Color.RESET);
                     ViewUtil.borrowBookLoop(input, bookService);
                 }
+                case "2" -> {
+                    System.out.println(Color.BOLD_GREEN + "🧑‍🤝‍🧑 You selected: Member Management" + Color.RESET);
+                    ViewUtil.memberMenuLoop(input, memberService);
+                }
+                case "3" ->
+                        System.out.println(Color.BOLD_YELLOW + "🔄️ You selected: Borrow & Return System" + Color.RESET);
                 case "4" -> System.out.println(Color.BOLD_PURPLE + "📜 You selected: Activity Logs" + Color.RESET);
                 case "5" -> System.out.println(Color.BOLD_BLUE + "📊 You selected: Reports & Dashboards" + Color.RESET);
                 case "6" -> {

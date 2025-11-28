@@ -3,6 +3,7 @@ package co.istad.library.service;
 import co.istad.library.model.Book;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class BookServiceImpl implements BookService {
@@ -126,7 +127,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<Book> sortBooksByPublishYearAsc() {
         return books.stream()
-                .sorted((a, b) -> Integer.compare(a.getYear(), b.getYear()))
+                .sorted(Comparator.comparingInt(Book::getYear))
                 .toList();
     }
 
