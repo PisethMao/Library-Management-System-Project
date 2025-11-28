@@ -200,7 +200,7 @@ public record BookView(BookService bookService, InputValidator inputValidator) {
     public void searchBooks() {
         while (true) {
             System.out.println(Color.CYAN + "🔍 Search Books" + Color.RESET);
-            ViewUtil.showSearchMenu();
+//            ViewUtil.showSearchMenu();
             System.out.print(Color.YELLOW + "👉 Enter your choice (1-5): " + Color.RESET);
             String choice = inputValidator.input().nextLine().trim();
             List<Book> results;
