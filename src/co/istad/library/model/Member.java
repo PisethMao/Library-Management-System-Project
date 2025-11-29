@@ -1,5 +1,6 @@
 package co.istad.library.model;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,14 +10,14 @@ public class Member {
     private String address;
     private String phoneNumber;
     private String email;
-    private String membershipDate;
-    private String expiryDate;
+    private LocalDate membershipDate;
+    private LocalDate expiryDate;
     private List<String> borrowedBooks;
     private double fines;
     private String membershipType;
-    private String status;
+    private MemberStatus status;
 
-    public Member(String name, String address, String phoneNumber, String email, String membershipDate, String expiryDate, String membershipType, String status) {
+    public Member(String name, String address, String phoneNumber, String email, LocalDate membershipDate, LocalDate expiryDate, String membershipType, MemberStatus status) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.address = address;
@@ -25,7 +26,7 @@ public class Member {
         this.membershipDate = membershipDate;
         this.expiryDate = expiryDate;
         this.membershipType = membershipType;
-        this.status = "Active";
+        this.status = status;
     }
 
     public String getId() {
@@ -64,19 +65,19 @@ public class Member {
         this.email = email;
     }
 
-    public String getMembershipDate() {
+    public LocalDate getMembershipDate() {
         return membershipDate;
     }
 
-    public void setMembershipDate(String membershipDate) {
+    public void setMembershipDate(LocalDate membershipDate) {
         this.membershipDate = membershipDate;
     }
 
-    public String getExpiryDate() {
+    public LocalDate getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(String expiryDate) {
+    public void setExpiryDate(LocalDate expiryDate) {
         this.expiryDate = expiryDate;
     }
 
@@ -104,20 +105,20 @@ public class Member {
         this.membershipType = membershipType;
     }
 
-    public String getStatus() {
+    public MemberStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(MemberStatus status) {
         this.status = status;
     }
 
     public void addBorrowedBook(String bookId) {
-        borrowedBooks.remove(bookId);
+        borrowedBooks.add(bookId);
     }
 
     public void removeBorrowedBook(String bookId) {
-        borrowedBooks.add(bookId);
+        borrowedBooks.remove(bookId);
     }
 
     public void calculateFines() {
