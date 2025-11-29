@@ -1,5 +1,9 @@
 package co.istad.library.util;
 
+import co.istad.library.model.MemberStatus;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public record InputValidator(Scanner input) {
@@ -147,7 +151,7 @@ public record InputValidator(Scanner input) {
         }
     }
 
-    public String readDate(String message) {
+    public LocalDate readDate(String message) {
         while (true) {
             System.out.print(message);
             // I use trim()
@@ -157,11 +161,49 @@ public record InputValidator(Scanner input) {
                 System.out.println(Color.RED + "❌ Date cannot be empty!" + Color.RESET);
                 continue;
             }
-            if (!date.matches("\\\\d{4}-\\\\d{2}-\\\\d{2}")) {
+            try {
+                return LocalDate.parse(date);
+            } catch (DateTimeParseException e) {
                 System.out.println(Color.RED + "❌ Date must be in format YYYY-MM-DD!" + Color.RESET);
+            }
+        }
+    }
+
+    public MemberStatus readStatus(String message) {
+        while (true) {
+            System.out.print(message);
+            String text = input.nextLine().trim();
+            if (text.isEmpty()) {
+                System.out.println(Color.RED + "❌ Status cannot be empty!" + Color.RESET);
                 continue;
             }
-            return date;
+            try {
+                // User can type: Active, active, ACTIVE → all OK
+                return MemberStatus.valueOf(text.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                System.out.println(Color.RED + "❌ Invalid status! Allowed: Active, Inactive, Expired, Suspended" + Color.RESET);
+            }
+        }
+    }
+
+    public LocalDate readExpiryDate(String message, LocalDate membershipDate) {
+        while (true) {
+            System.out.print(message);
+            String text = input.nextLine().trim();
+            if (text.isEmpty()) {
+                System.out.println(Color.RED + "❌ Expiry date cannot be empty!" + Color.RESET);
+                continue;
+            }
+            try {
+                LocalDate expiry = LocalDate.parse(text); // expects YYYY-MM-DD
+                if (!expiry.isAfter(membershipDate)) {
+                    System.out.println(Color.RED + "❌ Expiry date must be AFTER membership date (" + membershipDate + ")!" + Color.RESET);
+                    continue;
+                }
+                return expiry;
+            } catch (DateTimeParseException e) {
+                System.out.println(Color.RED + "❌ Date must be in format YYYY-MM-DD!" + Color.RESET);
+            }
         }
     }
 }
