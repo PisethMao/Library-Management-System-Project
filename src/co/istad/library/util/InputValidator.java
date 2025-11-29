@@ -92,4 +92,76 @@ public record InputValidator(Scanner input) {
             return txt;
         }
     }
+
+    public String readAddress(String message) {
+        while (true) {
+            System.out.print(message);
+            // I use trim()
+            // Because i want to remove any leading or trailing whitespace characters from the input string.
+            String addr = input.nextLine().trim();
+            if (addr.isEmpty()) {
+                System.out.println(Color.RED + "❌ Address cannot be empty!" + Color.RESET);
+                continue;
+            }
+            if (!addr.matches("[A-Za-z0-9 ,./#-]+")) {
+                System.out.println(Color.RED + "❌ Address can only contain letters, numbers, and , . / # - characters!" + Color.RESET);
+                continue;
+            }
+            return addr;
+        }
+    }
+
+    public String readPhone(String message) {
+        while (true) {
+            System.out.print(message);
+            // I use trim()
+            // Because i want to remove any leading or trailing whitespace characters from the input string.
+            String phone = input.nextLine().trim();
+            if (phone.isEmpty()) {
+                System.out.println(Color.RED + "❌ Phone number cannot be empty!" + Color.RESET);
+                continue;
+            }
+            if (!phone.matches("[0-9+\\- ]+")) {
+                System.out.println(Color.RED + "❌ Phone number can only contain digits, '+', '-' and spaces!" + Color.RESET);
+                continue;
+            }
+            return phone;
+        }
+    }
+
+    public String readEmail(String message) {
+        while (true) {
+            System.out.print(message);
+            // I use trim()
+            // Because i want to remove any leading or trailing whitespace characters from the input string.
+            String email = input.nextLine().trim();
+            if (email.isEmpty()) {
+                System.out.println(Color.RED + "❌ Email cannot be empty!" + Color.RESET);
+                continue;
+            }
+            if (!email.matches("^[\\w._%+-]+@[\\w.-]+\\.[A-Za-z]{2,}$")) {
+                System.out.println(Color.RED + "❌ Invalid email format!" + Color.RESET);
+                continue;
+            }
+            return email;
+        }
+    }
+
+    public String readDate(String message) {
+        while (true) {
+            System.out.print(message);
+            // I use trim()
+            // Because i want to remove any leading or trailing whitespace characters from the input string.
+            String date = input.nextLine().trim();
+            if (date.isEmpty()) {
+                System.out.println(Color.RED + "❌ Date cannot be empty!" + Color.RESET);
+                continue;
+            }
+            if (!date.matches("\\\\d{4}-\\\\d{2}-\\\\d{2}")) {
+                System.out.println(Color.RED + "❌ Date must be in format YYYY-MM-DD!" + Color.RESET);
+                continue;
+            }
+            return date;
+        }
+    }
 }

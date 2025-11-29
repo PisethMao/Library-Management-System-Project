@@ -8,24 +8,18 @@ import java.util.Optional;
 
 public class MemberServiceImpl implements MemberService {
     private final List<Member> members = new ArrayList<>();
-
     public MemberServiceImpl() {
-        members.add(new Member("1", "John Doe", "1234 Elm St", "123-456-7890", "john.doe@example.com",
-                "2021-01-01", "2023-01-01", "Regular", "Active"));
-        members.add(new Member("2", "Jane Smith", "5678 Oak St", "987-654-3210", "jane.smith@example.com",
-                "2021-02-01", "2023-02-01", "Premium", "Active"));
-        members.add(new Member("3", "Alice Johnson", "1357 Pine St", "555-555-5555", "alice.johnson@example.com",
-                "2021-03-01", "2023-03-01", "Student", "Suspended"));
-        members.add(new Member("4", "Bob Brown", "2468 Maple St", "777-777-7777", "bob.brown@example.com",
-                "2021-04-01", "2023-04-01", "Regular", "Active"));
-        members.add(new Member("5", "Charlie Davis", "1359 Birch St", "888-888-8888", "charlie.davis@example.com",
-                "2021-05-01", "2023-05-01", "Premium", "Active"));
-        members.add(new Member("6", "Deborah White", "2460 Cedar St", "999-999-9999", "deborah.white@example.com",
-                "2021-06-01", "2023-06-01", "Regular", "Inactive"));
+        members.add(new Member("John", "123 Main St.", "123-456-7890", "pisethmao2002@gmail.com", "2022-01-01", "2022-12-31", "Gold", "Active"));
+        members.add(new Member("Jane", "456 Main St.", "987-654-3210", "menglongkeo07@gmail.com", "2022-01-01", "2022-12-31", "Silver", "Active"));
+        members.add(new Member("Bob", "789 Main St.", "098-765-4321", "chanchhay07@gmail.com", "2022-01-01", "2022-12-31", "Bronze", "Active"));
+        members.add(new Member("Alice", "101 Main St.", "111-222-3333", "kompheakyan@gmail.com", "2022-01-01", "2022-12-31", "Gold", "Active"));
+        members.add(new Member("Charlie", "202 Main St.", "222-333-4444", "pisethmao2002@gmail.com", "2022-01-01", "2022-12-31", "Silver", "Active"));
+        members.add(new Member("David", "303 Main St.", "333-444-5555", "menglongkeo07@gmail.com", "2022-01-01", "2022-12-31", "Bronze", "Active"));
     }
 
     @Override
-    public void addMember(Member member) {
+    public void addMember(String name, String address, String phoneNumber, String email, String membershipDate, String expiryDate, String membershipType, String status) {
+        Member member = new Member(name, address, phoneNumber, email, membershipDate, expiryDate, membershipType, status);
         members.add(member);
         System.out.println("Nem member added successfully! " + member.getName());
     }
