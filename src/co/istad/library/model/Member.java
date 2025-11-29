@@ -16,7 +16,7 @@ public class Member {
     private String membershipType;
     private String status;
 
-    public Member(String id, String name, String address, String phoneNumber, String email, String membershipDate, String expiryDate, String membershipType, String status) {
+    public Member(String name, String address, String phoneNumber, String email, String membershipDate, String expiryDate, String membershipType, String status) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.address = address;

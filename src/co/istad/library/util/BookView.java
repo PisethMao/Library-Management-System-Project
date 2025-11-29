@@ -11,14 +11,6 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
-/**
- * @param bookService I comment on these two lines because I want BookView class to use the SAME Scanner and the SAME BookService that are created in Main, instead of creating new ones.
- *                    This prevents duplicate object and makes the book list work correctly.
- *                    private final Scanner input = new Scanner(System.in);
- *                    private final BookService bookService = new BookService();
- *                    I use record in this because it can reduce a boilerplate code.
- *                    I don't need to manually define getter methods, constructors, ...
- */
 public record BookView(BookService bookService, InputValidator inputValidator) {
     private static final int PAGE_SIZE = 5;
     private static int currentPage = 1;
@@ -42,23 +34,23 @@ public record BookView(BookService bookService, InputValidator inputValidator) {
     private Table buildPageTable(List<Book> books, int startIndex, int endIndex) {
         Table table = new Table(7, BorderStyle.UNICODE_ROUND_BOX_WIDE, ShownBorders.ALL);
         CellStyle center = new CellStyle(CellStyle.HorizontalAlign.center);
-        table.addCell("ID (UUID)", center);
-        table.addCell("Title", center);
-        table.addCell("Author", center);
-        table.addCell("Category", center);
-        table.addCell("ISBN", center);
-        table.addCell("Publish Year", center);
-        table.addCell("Quantity", center);
+        table.addCell(Color.BOLD_BLACK + "ID (UUID)" + Color.RESET, center);
+        table.addCell(Color.BOLD_BLACK + "Title" + Color.RESET, center);
+        table.addCell(Color.BOLD_BLACK + "Author" + Color.RESET, center);
+        table.addCell(Color.BOLD_BLACK + "Category" + Color.RESET, center);
+        table.addCell(Color.BOLD_BLACK + "ISBN" + Color.RESET, center);
+        table.addCell(Color.BOLD_BLACK + "Publish Year" + Color.RESET, center);
+        table.addCell(Color.BOLD_BLACK + "Quantity" + Color.RESET, center);
         for (int i = startIndex; i < endIndex; i++) {
             Book b = books.get(i);
-            table.addCell(b.getId(), center);
-            table.addCell(b.getTitle(), center);
-            table.addCell(b.getAuthor(), center);
-            table.addCell(b.getCategory(), center);
-            table.addCell(b.getIsbn(), center);
+            table.addCell(Color.BOLD_GREEN + b.getId() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + b.getTitle() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + b.getAuthor() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + b.getCategory() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + b.getIsbn() + Color.RESET, center);
             // I use String.valueOf() because the table only accepts String objects.
-            table.addCell(String.valueOf(b.getYear()), center);
-            table.addCell(String.valueOf(b.getQuantity()), center);
+            table.addCell(Color.BOLD_GREEN + b.getYear() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + b.getQuantity() + Color.RESET, center);
         }
         return table;
     }
@@ -80,7 +72,7 @@ public record BookView(BookService bookService, InputValidator inputValidator) {
         System.out.println(Color.BOLD_YELLOW + "Options: "
                 + Color.GREEN + "1. Next Page "
                 + Color.RESET + "| "
-                + Color.RED + "2. Previous Page "
+                + Color.BOLD_BLUE + "2. Previous Page "
                 + Color.RESET + "| "
                 + Color.BOLD_RED + "3. Exit"
                 + Color.RESET);
@@ -100,9 +92,15 @@ public record BookView(BookService bookService, InputValidator inputValidator) {
                 case "1" -> currentPage = Math.min(currentPage + 1, totalPages);
                 case "2" -> currentPage = Math.max(currentPage - 1, 1);
                 case "3" -> {
+                    System.out.println(Color.YELLOW + "⚡ Press ENTER to continue..." + Color.RESET);
+                    input.nextLine();
                     return;
                 }
-                default -> System.out.println(Color.BOLD_RED + "⚠️ Invalid input. Use arrows or 1/2/3." + Color.RESET);
+                default -> {
+                    System.out.println(Color.BOLD_RED + "⚠️ Invalid input. Use 1/2/3." + Color.RESET);
+                    System.out.println(Color.YELLOW + "⚡ Press ENTER to continue..." + Color.RESET);
+                    input.nextLine();
+                }
             }
         }
     }
@@ -154,12 +152,12 @@ public record BookView(BookService bookService, InputValidator inputValidator) {
             return;
         }
         System.out.println(Color.YELLOW + "⚠️ You are about to delete this book: " + Color.RESET);
-        System.out.println("📖 Title: " + existing.getTitle());
-        System.out.println("✍️ Author: " + existing.getAuthor());
-        System.out.println("📚️ Category: " + existing.getCategory());
-        System.out.println("🔢 ISBN: " + existing.getIsbn());
-        System.out.println("📅 Year: " + existing.getYear());
-        System.out.println("📦 Quantity: " + existing.getQuantity() + Color.RESET);
+        System.out.println(Color.BOLD_CYAN + "📖 Title: " + Color.RESET + existing.getTitle());
+        System.out.println(Color.BOLD_CYAN + "✍️ Author: " + Color.RESET + existing.getAuthor());
+        System.out.println(Color.BOLD_CYAN + "📚️ Category: " + Color.RESET + existing.getCategory());
+        System.out.println(Color.BOLD_CYAN + "🔢 ISBN: " + Color.RESET + existing.getIsbn());
+        System.out.println(Color.BOLD_CYAN + "📅 Year: " + Color.RESET + existing.getYear());
+        System.out.println(Color.BOLD_CYAN + "📦 Quantity: " + Color.RESET + existing.getQuantity() + Color.RESET);
         System.out.print(Color.RED + "❗Type YES to confirm delete: " + Color.RESET);
         Set<String> ok = Set.of("yes", "y");
         String confirm = inputValidator.input().nextLine().trim();
@@ -186,13 +184,13 @@ public record BookView(BookService bookService, InputValidator inputValidator) {
         table.addCell(Color.BOLD_CYAN + "Publish Year" + Color.RESET, header);
         table.addCell(Color.BOLD_CYAN + "Quantity" + Color.RESET, header);
         for (Book b : results) {
-            table.addCell(b.getId(), header);
-            table.addCell(b.getTitle(), header);
-            table.addCell(b.getAuthor(), header);
-            table.addCell(b.getCategory(), header);
-            table.addCell(b.getIsbn(), header);
-            table.addCell(String.valueOf(b.getYear()), header);
-            table.addCell(String.valueOf(b.getQuantity()), header);
+            table.addCell(Color.BOLD_BLUE + b.getId() + Color.RESET, header);
+            table.addCell(Color.BOLD_BLUE + b.getTitle() + Color.RESET, header);
+            table.addCell(Color.BOLD_BLUE + b.getAuthor() + Color.RESET, header);
+            table.addCell(Color.BOLD_BLUE + b.getCategory() + Color.RESET, header);
+            table.addCell(Color.BOLD_BLUE + b.getIsbn() + Color.RESET, header);
+            table.addCell(Color.BOLD_BLUE + b.getYear() + Color.RESET, header);
+            table.addCell(Color.BOLD_BLUE + b.getQuantity() + Color.RESET, header);
         }
         System.out.println(table.render());
     }
@@ -223,10 +221,14 @@ public record BookView(BookService bookService, InputValidator inputValidator) {
                 }
                 case "5" -> {
                     System.out.println(Color.BOLD_CYAN + "🔙 Back to Book Menu" + Color.RESET);
+                    System.out.println(Color.YELLOW + "⚡ Press ENTER to continue..." + Color.RESET);
+                    inputValidator.input().nextLine();
                     return;
                 }
                 default -> {
                     System.out.println(Color.BOLD_RED + "⚠️ Invalid choice." + Color.RESET);
+                    System.out.println(Color.YELLOW + "⚡ Press ENTER to continue..." + Color.RESET);
+                    inputValidator.input().nextLine();
                     continue;
                 }
             }
