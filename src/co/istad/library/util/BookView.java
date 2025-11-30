@@ -1,17 +1,25 @@
 package co.istad.library.util;
 
 import co.istad.library.model.Book;
+import co.istad.library.model.BorrowRecord;
+import co.istad.library.model.Member;
 import co.istad.library.service.BookService;
+import co.istad.library.service.BorrowService;
+import co.istad.library.service.BorrowServiceImpl;
+import co.istad.library.service.MemberService;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 
-public record BookView(BookService bookService, InputValidator inputValidator) {
+public record BookView(BookService bookService, InputValidator inputValidator, MemberService memberService,
+                       BorrowService borrowService) {
     private static final int PAGE_SIZE = 5;
     private static int currentPage = 1;
 
@@ -34,13 +42,13 @@ public record BookView(BookService bookService, InputValidator inputValidator) {
     private Table buildPageTable(List<Book> books, int startIndex, int endIndex) {
         Table table = new Table(7, BorderStyle.UNICODE_ROUND_BOX_WIDE, ShownBorders.ALL);
         CellStyle center = new CellStyle(CellStyle.HorizontalAlign.center);
-        table.addCell(Color.BOLD_BLACK + "ID (UUID)" + Color.RESET, center);
-        table.addCell(Color.BOLD_BLACK + "Title" + Color.RESET, center);
-        table.addCell(Color.BOLD_BLACK + "Author" + Color.RESET, center);
-        table.addCell(Color.BOLD_BLACK + "Category" + Color.RESET, center);
-        table.addCell(Color.BOLD_BLACK + "ISBN" + Color.RESET, center);
-        table.addCell(Color.BOLD_BLACK + "Publish Year" + Color.RESET, center);
-        table.addCell(Color.BOLD_BLACK + "Quantity" + Color.RESET, center);
+        table.addCell(Color.BOLD + "ID (UUID)" + Color.RESET, center);
+        table.addCell(Color.BOLD + "Title" + Color.RESET, center);
+        table.addCell(Color.BOLD + "Author" + Color.RESET, center);
+        table.addCell(Color.BOLD + "Category" + Color.RESET, center);
+        table.addCell(Color.BOLD + "ISBN" + Color.RESET, center);
+        table.addCell(Color.BOLD + "Publish Year" + Color.RESET, center);
+        table.addCell(Color.BOLD + "Quantity" + Color.RESET, center);
         for (int i = startIndex; i < endIndex; i++) {
             Book b = books.get(i);
             table.addCell(Color.BOLD_GREEN + b.getId() + Color.RESET, center);
@@ -69,13 +77,7 @@ public record BookView(BookService bookService, InputValidator inputValidator) {
         Table table = buildPageTable(books, startIndex, endIndex);
         System.out.println(table.render());
         System.out.println(Color.BOLD_CYAN + "📄 Page " + currentPage + " of " + totalPages + Color.RESET);
-        System.out.println(Color.BOLD_YELLOW + "Options: "
-                + Color.GREEN + "1. Next Page "
-                + Color.RESET + "| "
-                + Color.BOLD_BLUE + "2. Previous Page "
-                + Color.RESET + "| "
-                + Color.BOLD_RED + "3. Exit"
-                + Color.RESET);
+        System.out.println(Color.BOLD_YELLOW + "Options: " + Color.GREEN + "1. Next Page " + Color.RESET + "| " + Color.BOLD_BLUE + "2. Previous Page " + Color.RESET + "| " + Color.BOLD_RED + "3. Exit" + Color.RESET);
     }
 
     public void navigatePagination() {
@@ -329,4 +331,130 @@ public record BookView(BookService bookService, InputValidator inputValidator) {
         currentPage = 1;
         paginateSortedBooks(sortedBooks);
     }
+
+    public Member memberVerify() {
+        System.out.print(Color.BOLD_CYAN + "🔎 Enter member ID to continue: " + Color.RESET);
+        String memberId = inputValidator.input().nextLine().trim();
+        Optional<Member> memberOpt = memberService.searchMember(memberId);
+        if (memberOpt.isEmpty()) {
+            System.out.println(Color.RED + "❌ Member not found!" + Color.RESET);
+            return null;
+        }
+        Member m = memberOpt.get();
+        System.out.println(Color.BOLD_YELLOW + "🧾 Member found:" + Color.RESET);
+        System.out.println(Color.BOLD_GREEN + "ID: " + m.getId());
+        System.out.println(Color.BOLD_GREEN + "Name: " + m.getName());
+        System.out.println(Color.BOLD_GREEN + "Email: " + m.getEmail());
+        System.out.println(Color.BOLD_GREEN + "Status: " + m.getStatus() + Color.RESET);
+        System.out.print(Color.BOLD_RED + "⚠️ Are you sure you want to continue as this member? (y/n): " + Color.RESET);
+        String confirm = inputValidator.input().nextLine().trim().toLowerCase();
+        if (confirm.equals("y")) {
+            return m;
+        } else {
+            System.out.println(Color.BOLD_RED + "❌ Cancelled verification");
+            return null;
+        }
+    }
+
+    public void borrowBook(Member memberData) {
+        System.out.print(Color.CYAN + "🗑️ Enter Book ID to borrow: " + Color.RESET);
+        String id = inputValidator.input().nextLine().trim();
+        Book existing = bookService.findId(id);
+        if (existing == null) {
+            System.out.println(Color.BOLD_RED + "❌ No book found with ID: " + id + Color.RESET);
+            return;
+        }
+        if (existing.getQuantity() == 0) {
+            System.out.println(Color.BOLD_RED + "Book Out Of Stock !!");
+            return;
+        }
+        if (borrowService.hasBorrow(memberData.getName(), existing.getTitle())) {
+            System.out.println(Color.BOLD_RED + "Cannot borrow the same book!!" + Color.RESET);
+            return;
+        }
+        System.out.println(Color.YELLOW + "⚠️ You are about to borrow this book: " + Color.RESET);
+        System.out.println(Color.BOLD_CYAN + "📖 Title: " + Color.RESET + existing.getTitle());
+        System.out.println(Color.BOLD_CYAN + "✍️ Author: " + Color.RESET + existing.getAuthor());
+        System.out.println(Color.BOLD_CYAN + "📚️ Category: " + Color.RESET + existing.getCategory());
+        System.out.println(Color.BOLD_CYAN + "🔢 ISBN: " + Color.RESET + existing.getIsbn());
+        System.out.println(Color.BOLD_CYAN + "📅 Year: " + Color.RESET + existing.getYear());
+        System.out.println(Color.BOLD_CYAN + "📦 Quantity: " + Color.RESET + existing.getQuantity() + Color.RESET);
+        System.out.print(Color.RED + "❗Type YES to confirm borrow: " + Color.RESET);
+        Set<String> ok = Set.of("yes", "y");
+        String confirm = inputValidator.input().nextLine().trim();
+        if (!ok.contains(confirm.toLowerCase())) {
+            System.out.println(Color.YELLOW + "❎ Borrow cancelled." + Color.RESET);
+            return;
+        }
+        existing.setQuantity(existing.getQuantity() - 1);
+        if (existing.getQuantity() >= 0) {
+            BorrowRecord newBorrowRecord = new BorrowRecord(memberData.getName(), existing.getTitle(), LocalDate.now(), LocalDate.now().plusDays(7));
+            borrowService.addBorrowRecord(newBorrowRecord);
+            System.out.println(Color.BOLD_GREEN + "✅ Book borrowed successfully!" + Color.RESET);
+        } else {
+            System.out.println(Color.RED + "❌ Failed to borrow book." + Color.RESET);
+        }
+    }
+
+    public void displayBorrowRecord() {
+        List<BorrowRecord> borrowRecords = borrowService.getAllBorrowRecord();
+        int totalBooks = borrowRecords.size();
+        int totalPages = (int) Math.ceil((double) totalBooks / PAGE_SIZE);
+        if (totalPages == 0) {
+            System.out.println(Color.RED + "⚠️ No records available!" + Color.RESET);
+            return;
+        }
+        if (currentPage > totalPages) currentPage = totalPages;
+        int startIndex = (currentPage - 1) * PAGE_SIZE;
+        int endIndex = Math.min(startIndex + PAGE_SIZE, totalBooks);
+        Table table = buildBorrowTable(borrowRecords, startIndex, endIndex);
+        System.out.println(table.render());
+        System.out.println(Color.BOLD_CYAN + "📄 Page " + currentPage + " of " + totalPages + Color.RESET);
+        System.out.println(Color.BOLD_YELLOW + "Options: " + Color.GREEN + "1. Next Page " + Color.RESET + "| " + Color.BOLD_BLUE + "2. Previous Page " + Color.RESET + "| " + Color.BOLD_RED + "3. Exit" + Color.RESET);
+    }
+
+    private Table buildBorrowTable(List<BorrowRecord> borrowRecords, int startIndex, int endIndex) {
+        Table table = new Table(4, BorderStyle.UNICODE_ROUND_BOX_WIDE, ShownBorders.ALL);
+        CellStyle center = new CellStyle(CellStyle.HorizontalAlign.center);
+        table.addCell(Color.BOLD + "Member Name" + Color.RESET, center);
+        table.addCell(Color.BOLD + "Book Title" + Color.RESET, center);
+        table.addCell(Color.BOLD + "Borrow Date" + Color.RESET, center);
+        table.addCell(Color.BOLD + "Return Date" + Color.RESET, center);
+        for (int i = startIndex; i < endIndex; i++) {
+            BorrowRecord b = borrowRecords.get(i);
+            table.addCell(Color.BOLD_GREEN + b.getMemberName() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + b.getBookName() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + b.getBorrowAt() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + b.getWillReturn() + Color.RESET, center);
+        }
+        return table;
+    }
+
+    public void navigateBorrowPagination() {
+        Scanner input = new Scanner(System.in);
+        while (true) {
+            displayBorrowRecord();
+            System.out.print(Color.BOLD_CYAN + "👉 Type 1/2/3. Press ENTER to exit. Enter: " + Color.RESET);
+            String line = input.nextLine().trim();
+            int totalPages = (int) Math.ceil((double) borrowService.getAllBorrowRecord().size() / PAGE_SIZE);
+            if (line.isEmpty()) {
+                return;
+            }
+            switch (line) {
+                case "1" -> currentPage = Math.min(currentPage + 1, totalPages);
+                case "2" -> currentPage = Math.max(currentPage - 1, 1);
+                case "3" -> {
+                    System.out.println(Color.YELLOW + "⚡ Press ENTER to continue..." + Color.RESET);
+                    input.nextLine();
+                    return;
+                }
+                default -> {
+                    System.out.println(Color.BOLD_RED + "⚠️ Invalid input. Use 1/2/3." + Color.RESET);
+                    System.out.println(Color.YELLOW + "⚡ Press ENTER to continue..." + Color.RESET);
+                    input.nextLine();
+                }
+            }
+        }
+    }
 }
+
