@@ -124,7 +124,7 @@ public class ViewUtil {
         Member memberData = bookView.memberVerify();
         if (memberData == null) return;
         while (true) {
-            borrowAndReturnMenu();
+            borrowMenu();
             System.out.print(Color.BOLD_CYAN + "👉 Enter your choice (1-4): " + Color.RESET);
             String choice = input.nextLine().trim();
             switch (choice) {
@@ -145,14 +145,12 @@ public class ViewUtil {
                     System.out.println(Color.RED + "You have select back to main menu option" + Color.RESET);
                     return;
                 }
-                default -> {
-                    System.out.println(Color.BOLD_CYAN + "Invalid choice. Please try again!" + Color.RESET);
-                }
+                default -> System.out.println(Color.BOLD_CYAN + "Invalid choice. Please try again!" + Color.RESET);
             }
         }
     }
 
-    public static void activityMenu(){
+    public static void activityMenu() {
         Table table = new Table(1, BorderStyle.UNICODE_ROUND_BOX_WIDE);
         CellStyle titleStyle = new CellStyle(CellStyle.HorizontalAlign.center);
         table.addCell(Color.BOLD_CYAN + "Member's Records" + Color.RESET, titleStyle);
@@ -173,33 +171,13 @@ public class ViewUtil {
                     System.out.println(Color.YELLOW + "You have select total borrow books option" + Color.RESET);
                     bookView.navigateBorrowPagination();
                 }
-                case "2" -> System.out.println(Color.YELLOW + "You have select total return books option" + Color.RESET);
+                case "2" ->
+                        System.out.println(Color.YELLOW + "You have select total return books option" + Color.RESET);
                 case "3" -> {
                     System.out.println(Color.RED + "You have select back to main menu option" + Color.RESET);
-        table.addCell(Color.YELLOW + "2. Display/List All Books" + Color.RESET);
-        table.addCell(Color.RED + "3. Back to Main Menu" + Color.RESET);
-        System.out.println(table.render());
-    }
-
-    public static void borrowBookLoop(Scanner input, BookService bookService) {
-        while (true) {
-            BookView bookView = new BookView(bookService, new InputValidator(input));
-            borrowMenu();
-            System.out.print(Color.BOLD_CYAN + "👉 Enter your choice (1-3): " + Color.RESET);
-            String choice = input.nextLine().trim();
-            switch (choice) {
-                case "1" -> System.out.println(Color.YELLOW + "You have select borrow books option" + Color.RESET);
-                case "2" -> {
-                    System.out.println(Color.YELLOW + "Display/List All Books" + Color.RESET);
-                    bookView.navigatePagination();
-                }
-                case "3" -> {
-                    System.out.println(Color.BOLD_CYAN + "🔙 Returning to Main Menu..." + Color.RESET);
                     return;
                 }
-                default -> {
-                    System.out.println(Color.BOLD_CYAN + "Invalid choice. Please try again!" + Color.RESET);
-                }
+                default -> System.out.println(Color.BOLD_CYAN + "Invalid choice. Please try again!" + Color.RESET);
             }
         }
     }
