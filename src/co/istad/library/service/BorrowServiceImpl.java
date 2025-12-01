@@ -13,10 +13,6 @@ public class BorrowServiceImpl implements BorrowService {
         borrowRecords.add(new BorrowRecord("John", "The Great Gatsby", LocalDate.now(), LocalDate.now().plusDays(7)));
     }
 
-    public BorrowServiceImpl(String name, String bookTitle, LocalDate borrowDate, LocalDate returnDate) {
-        borrowRecords.add(new BorrowRecord(name, bookTitle, borrowDate, returnDate));
-    }
-
     @Override
     public List<BorrowRecord> getAllBorrowRecord() {
         return borrowRecords;

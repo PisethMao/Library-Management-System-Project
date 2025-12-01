@@ -18,7 +18,5 @@ public class Color {
     public static final String BOLD_GREEN = BOLD + GREEN;
     public static final String BOLD_BLUE = BOLD + BLUE;
     public static final String BOLD_YELLOW = BOLD + YELLOW;
-    public static final String BOLD_MAGENTA = BOLD + MAGENTA;
     public static final String BOLD_PURPLE = BOLD + PURPLE;
-    public static final String BOLD_BLACK = BOLD + BLACK;
 }
