@@ -1,13 +1,8 @@
 package co.istad.library;
 
-import co.istad.library.service.BookService;
-import co.istad.library.service.BookServiceImpl;
-import co.istad.library.service.MemberService;
-import co.istad.library.service.MemberServiceImpl;
-import co.istad.library.util.Color;
-import co.istad.library.util.InputValidator;
-import co.istad.library.util.MemberViewUtil;
-import co.istad.library.util.ViewUtil;
+import co.istad.library.service.*;
+import co.istad.library.util.*;
+
 import java.util.Scanner;
 
 public class Main {
@@ -16,6 +11,7 @@ public class Main {
         BookService bookService = new BookServiceImpl();
         MemberService memberService = new MemberServiceImpl();
         InputValidator inputValidator = new InputValidator(input);
+        BorrowService borrowService = new BorrowServiceImpl();
         ViewUtil.printBanner();
         while (true) {
             ViewUtil.showMainMenu();
@@ -24,7 +20,7 @@ public class Main {
             switch (choice) {
                 case "1" -> {
                     System.out.println(Color.BOLD_CYAN + "📘 Book Management Selected" + Color.RESET);
-                    ViewUtil.bookMenuLoop(input, bookService);
+                    ViewUtil.bookMenuLoop(input, bookService, memberService, borrowService);
                 }
                 case "2" -> {
                     System.out.println(Color.BOLD_GREEN + "🧑‍🤝‍🧑 You selected: Member Management" + Color.RESET);
@@ -32,9 +28,12 @@ public class Main {
                 }
                 case "3" -> {
                     System.out.println(Color.BOLD_YELLOW + "🔄️ You selected: Borrow & Return System" + Color.RESET);
-                    ViewUtil.borrowBookLoop(input, bookService);
+                    ViewUtil.borrowBookLoop(input, bookService, memberService, borrowService);
                 }
-                case "4" -> System.out.println(Color.BOLD_PURPLE + "📜 You selected: Activity Logs" + Color.RESET);
+                case "4" -> {
+                    System.out.println(Color.BOLD_PURPLE + "📜 You selected: Activity Logs" + Color.RESET);
+                    ViewUtil.activityMenuLoop(input, bookService, memberService, borrowService);
+                }
                 case "5" -> System.out.println(Color.BOLD_BLUE + "📊 You selected: Reports & Dashboards" + Color.RESET);
                 case "6" -> {
                     System.out.println(Color.BOLD_RED + "❌ Exiting the program... Goodbye!" + Color.RESET);
