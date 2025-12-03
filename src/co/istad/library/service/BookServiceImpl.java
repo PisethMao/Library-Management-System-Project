@@ -10,14 +10,13 @@ public class BookServiceImpl implements BookService {
     private final List<Book> books = new ArrayList<>();
 
     public BookServiceImpl() {
-        books.add(new Book("The Great Gatsby", "F Scott Fitzgerald", "long", "1234567890", 1925, 10));
-        books.add(new Book("The Great Gatsby", "George Orwell", "Dystopian", "0987654321", 1949, 5));
-        books.add(new Book("The Lord of the Rings", "J R R Tolkien", "Novel", "978-0-345-33322-2", 1954, 10));
-        books.add(new Book("The Great Gatsby", "F Scott Fitzgerald", "Novel", "1234567890", 1925, 10));
-        books.add(new Book("The Lord of the Rings", "George Orwell", "Dystopian", "0987654321", 1949, 5));
-        books.add(new Book("The Lord of the Rings", "J R R Tolkien", "Novel", "978-0-345-33322-2", 1954, 10));
+        books.add(new Book("The Great Gatsby", "F Scott Fitzgerald", "Novel", "9780061120084", 1925, 10));
+        books.add(new Book("Pride and Prejudice", "Jane Austen", "Romance", "9780141439518", 1813, 5));
+        books.add(new Book("Moby-Dick", "Herman Melville", "Adventure", "9780142437247", 1851, 10));
+        books.add(new Book("War and Peace", "Leo Tolstoy", "Historical", "9780199232765", 1869, 10));
+        books.add(new Book("Crime and Punishment", "Fyodor Dostoevsky", "Psychological", "9780140449136", 1866, 5));
+        books.add(new Book("The Catcher in the Rye", "J.D. Salinger", "Coming-of-Age", "9780316769488", 1951, 10));
     }
-
     @Override
     public void addBook(Book book) {
         books.add(book);

@@ -45,24 +45,16 @@ public class MemberViewUtil {
     }
 
     private static Table getTable() {
-        Table table = new Table(2, BorderStyle.UNICODE_ROUND_BOX_WIDE, ShownBorders.ALL);
+        Table table = new Table(1, BorderStyle.UNICODE_ROUND_BOX_WIDE);
         CellStyle header = new CellStyle(CellStyle.HorizontalAlign.center);
-        table.addCell(Color.BOLD_CYAN + "Option" + Color.RESET, header);
-        table.addCell(Color.BOLD_CYAN + "Description" + Color.RESET, header);
-        table.addCell(Color.BOLD_YELLOW + "1." + Color.RESET, header);
-        table.addCell(Color.BOLD_YELLOW + "Register New Member" + Color.RESET, header);
-        table.addCell(Color.BOLD_YELLOW + "2." + Color.RESET, header);
-        table.addCell(Color.BOLD_YELLOW + "Update Member Info" + Color.RESET, header);
-        table.addCell(Color.BOLD_YELLOW + "3." + Color.RESET, header);
-        table.addCell(Color.BOLD_YELLOW + "Remove Member" + Color.RESET, header);
-        table.addCell(Color.BOLD_YELLOW + "4." + Color.RESET, header);
-        table.addCell(Color.BOLD_YELLOW + "Search Member" + Color.RESET, header);
-        table.addCell(Color.BOLD_YELLOW + "5." + Color.RESET, header);
-        table.addCell(Color.BOLD_YELLOW + "Display all Members" + Color.RESET, header);
-        table.addCell(Color.BOLD_YELLOW + "6." + Color.RESET, header);
-        table.addCell(Color.BOLD_YELLOW + "Sort Members" + Color.RESET, header);
-        table.addCell(Color.BOLD_RED + "7." + Color.RESET, header);
-        table.addCell(Color.BOLD_RED + "Back to Main Menu" + Color.RESET, header);
+        table.addCell(Color.BOLD_CYAN + "Member Management" + Color.RESET, header);
+        table.addCell(Color.BOLD_YELLOW + "1. Register New Member" + Color.RESET);
+        table.addCell(Color.BOLD_YELLOW + "2. Update Member Info" + Color.RESET);
+        table.addCell(Color.BOLD_YELLOW + "3. Remove Member" + Color.RESET);
+        table.addCell(Color.BOLD_YELLOW + "4. Search Member" + Color.RESET);
+        table.addCell(Color.BOLD_YELLOW + "5. Display all Members" + Color.RESET);
+        table.addCell(Color.BOLD_YELLOW + "6. Sort Members" + Color.RESET);
+        table.addCell(Color.BOLD_RED + "7. Back to Main Menu" + Color.RESET);
         return table;
     }
 
