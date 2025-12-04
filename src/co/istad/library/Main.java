@@ -15,7 +15,7 @@ public class Main {
         ViewUtil.printBanner();
         while (true) {
             ViewUtil.showMainMenu();
-            System.out.print(Color.BOLD_CYAN + "👉 Enter your choice (1-6): " + Color.RESET);
+            System.out.print(Color.BOLD_CYAN + "👉 Enter your choice (1-5): " + Color.RESET);
             String choice = input.nextLine();
             switch (choice) {
                 case "1" -> {
@@ -31,14 +31,10 @@ public class Main {
                     ViewUtil.borrowBookLoop(input, bookService, memberService, borrowService);
                 }
                 case "4" -> {
-                    System.out.println(Color.BOLD_PURPLE + "📜 You selected: Activity Logs" + Color.RESET);
-                    ViewUtil.activityMenuLoop(input, bookService, memberService, borrowService);
-                }
-                case "5" -> {
                     System.out.println(Color.BOLD_BLUE + "📊 You selected: Reports & Dashboards" + Color.RESET);
                     ViewUtil.reportLoop(input, bookService, memberService, borrowService);
                 }
-                case "6" -> {
+                case "5" -> {
                     System.out.println(Color.BOLD_RED + "❌ Exiting the program... Goodbye!" + Color.RESET);
                     // The return statement in this code is used to exit the main method.
                     return;

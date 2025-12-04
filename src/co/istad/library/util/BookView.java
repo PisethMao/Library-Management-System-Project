@@ -3,6 +3,7 @@ package co.istad.library.util;
 import co.istad.library.model.Book;
 import co.istad.library.model.BorrowRecord;
 import co.istad.library.model.Member;
+import co.istad.library.model.MemberStatus;
 import co.istad.library.service.BookService;
 import co.istad.library.service.BorrowService;
 import co.istad.library.service.MemberService;
@@ -12,10 +13,7 @@ import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 public record BookView(BookService bookService, InputValidator inputValidator, MemberService memberService,
                        BorrowService borrowService) {
@@ -340,6 +338,10 @@ public record BookView(BookService bookService, InputValidator inputValidator, M
             return null;
         }
         Member m = memberOpt.get();
+        if (m.getStatus() == MemberStatus.EXPIRED || m.getStatus() == MemberStatus.SUSPENDED || m.getStatus() == MemberStatus.INACTIVE) {
+            System.out.println(Color.BOLD_RED + "❌ Cancelled verification member Status is: " + m.getStatus());
+            return null;
+        }
         System.out.println(Color.BOLD_YELLOW + "🧾 Member found:" + Color.RESET);
         System.out.println(Color.BOLD_GREEN + "ID: " + m.getId());
         System.out.println(Color.BOLD_GREEN + "Name: " + m.getName());
@@ -465,6 +467,90 @@ public record BookView(BookService bookService, InputValidator inputValidator, M
             System.out.print(Color.BOLD_CYAN + "👉 Type 1/2/3. Press ENTER to exit. Enter: " + Color.RESET);
             String line = input.nextLine().trim();
             int totalPages = (int) Math.ceil((double) borrowService.getAllBorrowRecord().size() / PAGE_SIZE);
+            if (line.isEmpty()) {
+                return;
+            }
+            switch (line) {
+                case "1" -> currentPage = Math.min(currentPage + 1, totalPages);
+                case "2" -> currentPage = Math.max(currentPage - 1, 1);
+                case "3" -> {
+                    System.out.println(Color.YELLOW + "⚡ Press ENTER to continue..." + Color.RESET);
+                    input.nextLine();
+                    return;
+                }
+                default -> {
+                    System.out.println(Color.BOLD_RED + "⚠️ Invalid input. Use 1/2/3." + Color.RESET);
+                    System.out.println(Color.YELLOW + "⚡ Press ENTER to continue..." + Color.RESET);
+                    input.nextLine();
+                }
+            }
+        }
+    }
+
+    private int getBorrowedCount(String bookName, BorrowService borrowService) {
+        int count = 0;
+        for (BorrowRecord br : borrowService.getAllBorrowRecord()) {
+            if (Objects.equals(br.getBookName(), bookName)) {
+                count += 1;
+            }
+        }
+        return count;
+    }
+
+    private Table buildAllBookTable(List<Book> books, int startIndex, int endIndex, BorrowService borrowService) {
+        Table table = new Table(7, BorderStyle.UNICODE_ROUND_BOX_WIDE, ShownBorders.ALL);
+        CellStyle center = new CellStyle(CellStyle.HorizontalAlign.center);
+
+        table.addCell("ID (UUID)", center);
+        table.addCell("Title", center);
+        table.addCell("Author", center);
+        table.addCell("Category", center);
+        table.addCell("ISBN", center);
+        table.addCell("Publish Year", center);
+        table.addCell("Quantity", center);
+
+        for (int i = startIndex; i < endIndex; i++) {
+            Book b = books.get(i);
+
+            int borrowed = getBorrowedCount(b.getTitle(), borrowService);
+            int totalQty = b.getQuantity() + borrowed;
+
+            table.addCell(Color.BOLD_GREEN + b.getId() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + b.getTitle() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + b.getAuthor() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + b.getCategory() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + b.getIsbn() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + b.getYear() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + totalQty + Color.RESET, center);
+        }
+
+        return table;
+    }
+
+    public void displayTotalBooksPage() {
+        List<Book> books = bookService.getAllBooks();
+        int totalBooks = books.size();
+        int totalPages = (int) Math.ceil((double) totalBooks / PAGE_SIZE);
+        if (totalPages == 0) {
+            System.out.println(Color.RED + "⚠️ No books available!" + Color.RESET);
+            return;
+        }
+        if (currentPage > totalPages) currentPage = totalPages;
+        int startIndex = (currentPage - 1) * PAGE_SIZE;
+        int endIndex = Math.min(startIndex + PAGE_SIZE, totalBooks);
+        Table table = buildAllBookTable(books, startIndex, endIndex, borrowService);
+        System.out.println(table.render());
+        System.out.println(Color.BOLD_CYAN + "📄 Page " + currentPage + " of " + totalPages + Color.RESET);
+        System.out.println(Color.BOLD_YELLOW + "Options: " + Color.GREEN + "1. Next Page " + Color.RESET + "| " + Color.BOLD_BLUE + "2. Previous Page " + Color.RESET + "| " + Color.BOLD_RED + "3. Exit" + Color.RESET);
+    }
+
+    public void navigateTotalBookPagination() {
+        Scanner input = new Scanner(System.in);
+        while (true) {
+            displayTotalBooksPage();
+            System.out.print(Color.BOLD_CYAN + "👉 Type 1/2/3. Press ENTER to exit. Enter: " + Color.RESET);
+            String line = input.nextLine().trim();
+            int totalPages = (int) Math.ceil((double) bookService.getAllBooks().size() / PAGE_SIZE);
             if (line.isEmpty()) {
                 return;
             }
