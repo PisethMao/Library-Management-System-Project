@@ -163,7 +163,8 @@ public class ViewUtil {
         table.addCell(Color.YELLOW + "2. Total Members" + Color.RESET);
         table.addCell(Color.YELLOW + "3. Total Borrow Books" + Color.RESET);
         table.addCell(Color.YELLOW + "4. Available Books" + Color.RESET);
-        table.addCell(Color.RED + "5. Back to Main Menu" + Color.RESET);
+        table.addCell(Color.YELLOW + "5. Top Borrowed Books" + Color.RESET);
+        table.addCell(Color.RED + "6. Back to Main Menu" + Color.RESET);
         System.out.println(table.render());
     }
 
@@ -247,6 +248,7 @@ public class ViewUtil {
                     System.out.println(Color.YELLOW + "📚 You selected: Total Books" + Color.RESET);
                     totalBook(bookService, borrowService);
                     bookView.navigateTotalBookPagination();
+                    continue;
                 }
                 case "2" -> {
                     System.out.println(Color.YELLOW + "👪 You selected: Total Members" + Color.RESET);
@@ -263,13 +265,17 @@ public class ViewUtil {
                     totalAvailableBook(bookService);
                     bookView.navigatePagination();
                     continue;
+                }case "5" -> {
+                    System.out.println(Color.YELLOW + "📕 You selected: Top Borrowed Books" + Color.RESET);
+                    bookView.topBorrowedBooks(borrowService);
+                    continue;
                 }
-                case "5" -> {
+                case "6" -> {
                     System.out.println(Color.BOLD_CYAN + "🔙 Returning to Main Menu..." + Color.RESET);
                     return;
                 }
                 default -> {
-                    System.out.println(Color.BOLD_CYAN + "Invalid choice. Please try again!" + Color.RESET);
+                    System.out.println(Color.BOLD_RED + "Invalid choice. Please try again!" + Color.RESET);
                     continue;
                 }
             }

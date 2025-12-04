@@ -570,5 +570,54 @@ public record BookView(BookService bookService, InputValidator inputValidator, M
             }
         }
     }
+
+    public void topBorrowedBooks(BorrowService borrowService) {
+
+        List<Map.Entry<String, Integer>> sortedList = getEntries(borrowService);
+        sortedList.sort((a, b) -> b.getValue() - a.getValue());
+
+        // TOP 1
+        Table tableTop1 = new Table(1, BorderStyle.UNICODE_ROUND_BOX_WIDE);
+        Table tableTop3 = new Table(1, BorderStyle.UNICODE_ROUND_BOX_WIDE);
+        tableTop1.setColumnWidth(0, 35, 65);
+        tableTop3.setColumnWidth(0, 35, 65);
+        CellStyle titleStyle = new CellStyle(CellStyle.HorizontalAlign.center);
+        if (!sortedList.isEmpty()) {
+            var top1 = sortedList.getFirst();
+            tableTop1.addCell(Color.BOLD_CYAN + "🔥 Top 1 Borrowed Book" + Color.RESET, titleStyle);
+            tableTop1.addCell(Color.BOLD_GREEN + top1.getKey() + " → " + top1.getValue() + " times" + Color.RESET, titleStyle);
+            System.out.println(tableTop1.render());
+        } else {
+            System.out.println(Color.BOLD_RED + "No Book borrowed!!" + Color.RESET);
+            return;
+        }
+
+        // TOP 3
+        tableTop3.addCell(Color.BOLD_CYAN + "🔥 Top 3 Borrowed Book" + Color.RESET, titleStyle);
+        for (int i = 0; i < Math.min(3, sortedList.size()); i++) {
+            var entry = sortedList.get(i);
+            tableTop3.addCell(Color.BOLD_GREEN + entry.getKey() + " → " + entry.getValue() + " times" + Color.RESET, titleStyle);
+        }
+        System.out.println(tableTop3.render());
+        System.out.println(Color.YELLOW + "⚡️ Press ENTER to exit..." + Color.RESET);
+        inputValidator.input().nextLine();
+    }
+
+    private static List<Map.Entry<String, Integer>> getEntries(BorrowService borrowService) {
+        List<BorrowRecord> records = borrowService.getAllBorrowRecord();
+
+        // Count frequency
+        Map<String, Integer> borrowCount = new HashMap<>();
+        for (BorrowRecord record : records) {
+            borrowCount.put(
+                    record.getBookName(),
+                    borrowCount.getOrDefault(record.getBookName(), 0) + 1
+            );
+        }
+
+        // Sort by highest borrow count
+        return new ArrayList<>(borrowCount.entrySet());
+    }
+
 }
 
