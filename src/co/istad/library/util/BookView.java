@@ -395,6 +395,35 @@ public record BookView(BookService bookService, InputValidator inputValidator, M
         }
     }
 
+    public void returnBook(Member memberData) {
+        System.out.print(Color.CYAN + "🗑️ Enter Book ID to return: " + Color.RESET);
+        String id = inputValidator.input().nextLine().trim();
+        Book existing = bookService.findId(id);
+        if (existing == null) {
+            System.out.println(Color.BOLD_RED + "❌ No book found with ID: " + id + Color.RESET);
+            return;
+        }
+        if (borrowService.hasBorrow(memberData.getName(), existing.getTitle())) {
+            System.out.println(Color.YELLOW + "⚠️ You are about to return this book: " + Color.RESET);
+            System.out.println(Color.BOLD_CYAN + "📖 Title: " + Color.RESET + existing.getTitle());
+            System.out.println(Color.BOLD_CYAN + "✍️ Author: " + Color.RESET + existing.getAuthor());
+            System.out.println(Color.BOLD_CYAN + "📚️ Category: " + Color.RESET + existing.getCategory());
+            System.out.println(Color.BOLD_CYAN + "🔢 ISBN: " + Color.RESET + existing.getIsbn());
+            System.out.println(Color.BOLD_CYAN + "📅 Year: " + Color.RESET + existing.getYear());
+            System.out.println(Color.BOLD_CYAN + "📦 Quantity: " + Color.RESET + 1 + Color.RESET);
+            System.out.print(Color.RED + "❗Type YES to confirm return: " + Color.RESET);
+            Set<String> ok = Set.of("yes", "y");
+            String confirm = inputValidator.input().nextLine().trim();
+            if (!ok.contains(confirm.toLowerCase())) {
+                System.out.println(Color.YELLOW + "❎ Borrow cancelled." + Color.RESET);
+                return;
+            }
+            existing.setQuantity(existing.getQuantity() + 1);
+            borrowService.returnBook(memberData.getName(), existing.getTitle());
+            System.out.println(Color.BOLD_GREEN + "✅ Book returned successfully!" + Color.RESET);
+        } else System.out.println(Color.BOLD_RED + "❌ Member didn't borrow this book!!" + Color.RESET);
+    }
+
     public void displayBorrowRecord() {
         List<BorrowRecord> borrowRecords = borrowService.getAllBorrowRecord();
         int totalBooks = borrowRecords.size();

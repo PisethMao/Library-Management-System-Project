@@ -134,7 +134,10 @@ public class ViewUtil {
                     System.out.println(Color.YELLOW + "You have select borrow books option" + Color.RESET);
                     bookView.borrowBook(memberData);
                 }
-                case "2" -> System.out.println(Color.YELLOW + "You have select return books option" + Color.RESET);
+                case "2" -> {
+                    System.out.println(Color.YELLOW + "You have select return books option" + Color.RESET);
+                    bookView.returnBook(memberData);
+                }
                 case "3" -> {
                     System.out.println(Color.YELLOW + "Display/List All Books" + Color.RESET);
                     bookView.navigatePagination();
