@@ -28,7 +28,6 @@ public class BookServiceImpl implements BookService {
         return books;
     }
 
-
     @Override
     public Book findId(String id) {
         for (Book book : books) {

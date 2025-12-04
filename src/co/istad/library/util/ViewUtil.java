@@ -1,5 +1,6 @@
 package co.istad.library.util;
 
+import co.istad.library.model.Book;
 import co.istad.library.model.Member;
 import co.istad.library.service.BookService;
 import co.istad.library.service.BorrowService;
@@ -8,6 +9,7 @@ import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.Table;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class ViewUtil {
@@ -182,6 +184,129 @@ public class ViewUtil {
                 }
                 default -> System.out.println(Color.BOLD_CYAN + "Invalid choice. Please try again!" + Color.RESET);
             }
+        }
+    }
+
+    // Report & Dashboard
+    public static void reportMenu() {
+        Table table = new Table(1, BorderStyle.UNICODE_ROUND_BOX_WIDE);
+        CellStyle titleStyle = new CellStyle(CellStyle.HorizontalAlign.center);
+        table.addCell(Color.BOLD_CYAN + "Reports & Dashboards" + Color.RESET, titleStyle);
+        table.addCell(Color.YELLOW + "1. Total Books" + Color.RESET);
+        table.addCell(Color.YELLOW + "2. Total Members" + Color.RESET);
+        table.addCell(Color.YELLOW + "3. Total Borrow Books" + Color.RESET);
+        table.addCell(Color.YELLOW + "4. Available Books" + Color.RESET);
+        table.addCell(Color.RED + "5. Back to Main Menu" + Color.RESET);
+        System.out.println(table.render());
+    }
+
+    public static void totalMember(MemberService memberService, Scanner input) {
+        // Total Member as integer
+        int totalMember = memberService.getAllMembers(1, Integer.MAX_VALUE).size();
+
+        Table table = new Table(1, BorderStyle.UNICODE_ROUND_BOX_WIDE);
+        table.setColumnWidth(0, 35, 65);
+        CellStyle titleStyle = new CellStyle(CellStyle.HorizontalAlign.center);
+        table.addCell(Color.BOLD_CYAN + "Total Member" + Color.RESET, titleStyle);
+        table.addCell(Color.YELLOW + totalMember + Color.RESET, titleStyle);
+        System.out.println(table.render());
+        int page = 1;
+        int pageSize = 5;
+        int total = memberService.getAllMembers(1, Integer.MAX_VALUE).size();
+        while (true) {
+            System.out.println(Color.MAGENTA + "📋 Displaying members (Page " + page + ")" + Color.RESET);
+            List<Member> allMembers = memberService.getAllMembers(page, pageSize);
+            MemberViewUtil.displayMembersInTable(allMembers);
+            System.out.print(Color.CYAN + "👉 Enter 'n' for next page, 'p' for previous page, 'b' to go back: " + Color.RESET);
+            String ch = input.nextLine().trim().toLowerCase();
+            if (ch.equals("n") && (page * pageSize) < total) {
+                page++;
+            } else if (ch.equals("p") && page > 1) {
+                page--;
+            } else if (ch.equals("b")) {
+                break;
+            } else {
+                System.out.println(Color.RED + "⚠️ Invalid choice, Please try again" + Color.RESET);
+            }
+        }
+    }
+
+    public static void totalBorrow(BorrowService borrowService, Scanner input) {
+        int totalBorrow = borrowService.getAllBorrowRecord().size();
+
+        Table table = new Table(1, BorderStyle.UNICODE_ROUND_BOX_WIDE);
+        table.setColumnWidth(0, 35, 65);
+        CellStyle titleStyle = new CellStyle(CellStyle.HorizontalAlign.center);
+        table.addCell(Color.BOLD_CYAN + "Total Borrow" + Color.RESET, titleStyle);
+        table.addCell(Color.YELLOW + totalBorrow + Color.RESET, titleStyle);
+        System.out.println(table.render());
+    }
+
+    public static void totalAvailableBook(BookService bookService) {
+        int totalAvailableBook = 0;
+        for (Book book : bookService.getAllBooks()) {
+            totalAvailableBook += book.getQuantity();
+        }
+        Table table = new Table(1, BorderStyle.UNICODE_ROUND_BOX_WIDE);
+        table.setColumnWidth(0, 35, 65);
+        CellStyle titleStyle = new CellStyle(CellStyle.HorizontalAlign.center);
+        table.addCell(Color.BOLD_CYAN + "Total Available" + Color.RESET, titleStyle);
+        table.addCell(Color.YELLOW + totalAvailableBook + Color.RESET, titleStyle);
+        System.out.println(table.render());
+    }
+
+    public static void totalBook(BookService bookService, BorrowService borrowService) {
+        int totalAvailableBook = 0;
+        for (Book book : bookService.getAllBooks()) {
+            totalAvailableBook += book.getQuantity();
+        }
+        int totalBook = borrowService.getAllBorrowRecord().size() + totalAvailableBook;
+        Table table = new Table(1, BorderStyle.UNICODE_ROUND_BOX_WIDE);
+        table.setColumnWidth(0, 35, 65);
+        CellStyle titleStyle = new CellStyle(CellStyle.HorizontalAlign.center);
+        table.addCell(Color.BOLD_CYAN + "Total Available" + Color.RESET, titleStyle);
+        table.addCell(Color.YELLOW + totalBook + Color.RESET, titleStyle);
+        System.out.println(table.render());
+    }
+
+    public static void reportLoop(Scanner input, BookService bookService, MemberService memberService, BorrowService borrowService) {
+        while (true) {
+            BookView bookView = new BookView(bookService, new InputValidator(input), memberService, borrowService);
+            reportMenu();
+            System.out.print(Color.BOLD_CYAN + "👉 Enter your choice (1-4): " + Color.RESET);
+            String choice = input.nextLine().trim();
+            switch (choice) {
+                case "1" -> {
+                    System.out.println(Color.YELLOW + "📚 You selected: Total Books" + Color.RESET);
+                    totalBook(bookService, borrowService);
+                }
+                case "2" -> {
+                    System.out.println(Color.YELLOW + "👪 You selected: Total Members" + Color.RESET);
+                    totalMember(memberService, input);
+                }
+                case "3" -> {
+                    System.out.println(Color.YELLOW + "📚 You selected: Total Borrow" + Color.RESET);
+                    totalBorrow(borrowService, input);
+                    bookView.navigateBorrowPagination();
+                    continue;
+                }
+                case "4" -> {
+                    System.out.println(Color.YELLOW + "📕 You selected: Available Books" + Color.RESET);
+                    totalAvailableBook(bookService);
+                    bookView.navigatePagination();
+                    continue;
+                }
+                case "5" -> {
+                    System.out.println(Color.BOLD_CYAN + "🔙 Returning to Main Menu..." + Color.RESET);
+                    return;
+                }
+                default -> {
+                    System.out.println(Color.BOLD_CYAN + "Invalid choice. Please try again!" + Color.RESET);
+                    continue;
+                }
+            }
+            System.out.println(Color.YELLOW + "⚡️ Press ENTER to continue..." + Color.RESET);
+            input.nextLine();
         }
     }
 }
