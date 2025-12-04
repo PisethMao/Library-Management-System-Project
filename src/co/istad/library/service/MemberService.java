@@ -25,4 +25,5 @@ public interface MemberService {
     Optional<Member> searchMember(String memberId);
     List<Member> searchMembers(String keyword);
     List<Member> getAllMembersSorted(MemberSortField sortField, boolean ascending);
+
 }

@@ -1,6 +1,7 @@
 package co.istad.library.service;
 
 import co.istad.library.model.BorrowRecord;
+import co.istad.library.model.Member;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -30,6 +31,11 @@ public class BorrowServiceImpl implements BorrowService {
                         r.getMemberName().equals(memberName)
                                 && r.getBookName().equals(bookName)
                 );
+    }
+
+    @Override
+    public boolean returnBook(String memberName, String bookName) {
+        return borrowRecords.removeIf(bookRecord -> bookRecord.getMemberName().equalsIgnoreCase(memberName) && bookRecord.getBookName().equalsIgnoreCase(bookName));
     }
 }
 
