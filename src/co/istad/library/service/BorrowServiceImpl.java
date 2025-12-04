@@ -12,6 +12,9 @@ public class BorrowServiceImpl implements BorrowService {
 
     public BorrowServiceImpl() {
         borrowRecords.add(new BorrowRecord("John", "The Great Gatsby", LocalDate.now(), LocalDate.now().plusDays(7)));
+        borrowRecords.add(new BorrowRecord("Charlie", "The Great Gatsby", LocalDate.now(), LocalDate.now().plusDays(7)));
+        borrowRecords.add(new BorrowRecord("John", "Pride and Prejudice", LocalDate.now(), LocalDate.now().plusDays(7)));
+        borrowRecords.add(new BorrowRecord("David", "The Great Gatsby", LocalDate.now(), LocalDate.now().plusDays(7)));
     }
 
     @Override
