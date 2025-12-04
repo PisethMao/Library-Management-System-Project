@@ -34,7 +34,10 @@ public class Main {
                     System.out.println(Color.BOLD_PURPLE + "📜 You selected: Activity Logs" + Color.RESET);
                     ViewUtil.activityMenuLoop(input, bookService, memberService, borrowService);
                 }
-                case "5" -> System.out.println(Color.BOLD_BLUE + "📊 You selected: Reports & Dashboards" + Color.RESET);
+                case "5" -> {
+                    System.out.println(Color.BOLD_BLUE + "📊 You selected: Reports & Dashboards" + Color.RESET);
+                    ViewUtil.reportLoop(input, bookService, memberService, borrowService);
+                }
                 case "6" -> {
                     System.out.println(Color.BOLD_RED + "❌ Exiting the program... Goodbye!" + Color.RESET);
                     // The return statement in this code is used to exit the main method.
