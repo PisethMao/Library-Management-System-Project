@@ -101,11 +101,22 @@ public class MemberViewUtil {
                     String address = inputValidator.readAddress(Color.BOLD_CYAN + "🏠 Enter address: " + Color.RESET);
                     String phoneNumber = inputValidator.readPhone(Color.BOLD_CYAN + "📞 Enter phone number: " + Color.RESET);
                     String email = inputValidator.readEmail(Color.BOLD_CYAN + "✉️ Enter email: " + Color.RESET);
-                    LocalDate membershipDate = inputValidator.readDate(Color.BOLD_CYAN + "📅 Enter membership date (YYYY-MM-DD): " + Color.RESET);
-                    LocalDate expiryDate = inputValidator.readExpiryDate(Color.BOLD_CYAN + "⏰ Enter expiry date (YYYY-MM-DD): " + Color.RESET, membershipDate);
-                    String membershipType = inputValidator.readText(Color.BOLD_CYAN + "🥇 Enter membership type (e.g., Regular, Gold, Platinum): " + Color.RESET);
-                    String status = String.valueOf(inputValidator.readStatus(Color.BOLD_CYAN + "✅ Enter status (e.g., Active, Inactive): " + Color.RESET));
-                    memberService.addMember(name, address, phoneNumber, email, membershipDate, expiryDate, membershipType, MemberStatus.valueOf(status));
+                    LocalDate membershipDate = LocalDate.now();
+                    LocalDate expiryDate = LocalDate.now().plusYears(10);
+                    String membershipType;
+                    while (true) {
+                        membershipType = inputValidator.readText(
+                                Color.BOLD_CYAN + "🥇 Enter membership type (Bronze, Silver, Gold): " + Color.RESET
+                        );
+                        membershipType = membershipType.trim().toLowerCase();
+                        String normalized = membershipType.substring(0, 1).toUpperCase() + membershipType.substring(1);
+                        if (normalized.equals("Bronze") || normalized.equals("Gold") || normalized.equals("Silver")) {
+                            membershipType = normalized;
+                            break;
+                        }
+                        System.out.println(Color.RED + "❌ Invalid Membership type!" + Color.RESET);
+                    }
+                    memberService.addMember(name, address, phoneNumber, email, membershipDate, expiryDate, membershipType, MemberStatus.ACTIVE);
                 }
 
                 case "2" -> {

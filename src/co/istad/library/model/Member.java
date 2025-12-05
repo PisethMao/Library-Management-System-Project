@@ -1,7 +1,6 @@
 package co.istad.library.model;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 public class Member {
@@ -12,8 +11,6 @@ public class Member {
     private String email;
     private LocalDate membershipDate;
     private LocalDate expiryDate;
-    private List<String> borrowedBooks;
-    private double fines;
     private String membershipType;
     private MemberStatus status;
 
@@ -81,22 +78,6 @@ public class Member {
         this.expiryDate = expiryDate;
     }
 
-    public List<String> getBorrowedBooks() {
-        return borrowedBooks;
-    }
-
-    public void setBorrowedBooks(List<String> borrowedBooks) {
-        this.borrowedBooks = borrowedBooks;
-    }
-
-    public double getFines() {
-        return fines;
-    }
-
-    public void setFines(double fines) {
-        this.fines = fines;
-    }
-
     public String getMembershipType() {
         return membershipType;
     }
@@ -113,15 +94,4 @@ public class Member {
         this.status = status;
     }
 
-    public void addBorrowedBook(String bookId) {
-        borrowedBooks.add(bookId);
-    }
-
-    public void removeBorrowedBook(String bookId) {
-        borrowedBooks.remove(bookId);
-    }
-
-    public void calculateFines() {
-
-    }
 }

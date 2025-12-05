@@ -10,10 +10,12 @@ public class BorrowServiceImpl implements BorrowService {
     private final List<BorrowRecord> borrowRecords = new ArrayList<>();
 
     public BorrowServiceImpl() {
-        borrowRecords.add(new BorrowRecord("John", "The Great Gatsby", LocalDate.now(), LocalDate.now().plusDays(7)));
-        borrowRecords.add(new BorrowRecord("Charlie", "The Great Gatsby", LocalDate.now(), LocalDate.now().plusDays(7)));
-        borrowRecords.add(new BorrowRecord("John", "Pride and Prejudice", LocalDate.now(), LocalDate.now().plusDays(7)));
-        borrowRecords.add(new BorrowRecord("David", "The Great Gatsby", LocalDate.now(), LocalDate.now().plusDays(7)));
+        borrowRecords.add(new BorrowRecord("John", "The Great Gatsby", "Novel", LocalDate.now(), LocalDate.now().plusDays(7)));
+        borrowRecords.add(new BorrowRecord("Charlie", "The Great Gatsby", "Novel", LocalDate.now(), LocalDate.now().plusDays(7)));
+        borrowRecords.add(new BorrowRecord("John", "Pride and Prejudice", "Romance", LocalDate.now(), LocalDate.now().plusDays(7)));
+        borrowRecords.add(new BorrowRecord("David", "The Great Gatsby", "Novel", LocalDate.now(), LocalDate.now().plusDays(7)));
+        borrowRecords.add(new BorrowRecord("David", "War and Peace", "Historical", LocalDate.now(), LocalDate.now().plusDays(7)));
+        borrowRecords.add(new BorrowRecord("Charlie", "War and Peace", "Historical", LocalDate.now(), LocalDate.now().plusDays(7)));
     }
 
     @Override
@@ -30,14 +32,22 @@ public class BorrowServiceImpl implements BorrowService {
     public boolean hasBorrow(String memberName, String bookName) {
         return borrowRecords.stream()
                 .anyMatch(r ->
-                        r.getMemberName().equals(memberName)
-                                && r.getBookName().equals(bookName)
+                        r.memberName().equals(memberName)
+                                && r.bookName().equals(bookName)
                 );
     }
 
     @Override
+    public int borrowCount(String memberName) {
+        return (int) borrowRecords.stream()
+                .filter(r ->
+                        r.memberName().equals(memberName)
+                ).count();
+    }
+
+    @Override
     public void returnBook(String memberName, String bookName) {
-        borrowRecords.removeIf(bookRecord -> bookRecord.getMemberName().equalsIgnoreCase(memberName) && bookRecord.getBookName().equalsIgnoreCase(bookName));
+        borrowRecords.removeIf(bookRecord -> bookRecord.memberName().equalsIgnoreCase(memberName) && bookRecord.bookName().equalsIgnoreCase(bookName));
     }
 }
 

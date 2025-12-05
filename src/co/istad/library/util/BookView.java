@@ -109,8 +109,19 @@ public record BookView(BookService bookService, InputValidator inputValidator, M
         String author = inputValidator.readText(Color.GREEN + "✍️ Enter author name: " + Color.RESET);
         String category = inputValidator.readText(Color.GREEN + "✍️ Enter category: " + Color.RESET);
         String isbn = inputValidator.readIsbn(Color.GREEN + "🔢 Enter ISBN: " + Color.RESET);
-        int year = inputValidator.readInt(Color.GREEN + "📅 Enter publish year: " + Color.RESET);
-        int quantity = inputValidator.readInt(Color.GREEN + "📦 Enter quantity: " + Color.RESET);
+        int year;
+        while (true) {
+            year = inputValidator.readInt(Color.GREEN + "📅 Enter publish year: " + Color.RESET);
+            if (year <= LocalDate.now().getYear() && year >= 1500)
+                break;
+            System.out.println(Color.RED + "❌ Invalid Published year" + Color.RESET);
+        }
+        int quantity;
+        while (true) {
+            quantity = inputValidator.readInt(Color.GREEN + "📦 Enter quantity: " + Color.RESET);
+            if (quantity > 0) break;
+            System.out.println(Color.RED + "❌ Invalid Quantity" + Color.RESET);
+        }
         Book newBook = new Book(title, author, category, isbn, year, quantity);
         bookService.addBook(newBook);
         System.out.println(Color.BOLD_YELLOW + "✅ Book added successfully!" + Color.RESET);
@@ -130,8 +141,19 @@ public record BookView(BookService bookService, InputValidator inputValidator, M
         String newAuthor = inputValidator.readOptionalText(existing.getAuthor(), Color.GREEN + "✍️ Author ");
         String newCategory = inputValidator.readOptionalText(existing.getCategory(), Color.GREEN + "📚️ Category ");
         String newIsbn = inputValidator.readOptionalIsbn(existing.getIsbn(), Color.GREEN + "🔢 ISBN ");
-        int newYear = inputValidator.readOptionalInt(existing.getYear(), Color.GREEN + "📅 Publish year ");
-        int newQty = inputValidator.readOptionalInt(existing.getQuantity(), Color.GREEN + "📦 Quantity ");
+        int newYear;
+        while (true) {
+            newYear = inputValidator.readOptionalInt(existing.getYear(), Color.GREEN + "📅 Publish year ");
+            if (newYear <= LocalDate.now().getYear() && newYear >= 1500)
+                break;
+            System.out.println(Color.RED + "❌ Invalid Published year" + Color.RESET);
+        }
+        int newQty;
+        while (true) {
+            newQty = inputValidator.readOptionalInt(existing.getQuantity(), Color.GREEN + "📦 Quantity ");
+            if (newQty > 0) break;
+            System.out.println(Color.RED + "❌ Invalid Quantity" + Color.RESET);
+        }
         existing.setTitle(newTitle);
         existing.setAuthor(newAuthor);
         existing.setCategory(newCategory);
@@ -197,7 +219,7 @@ public record BookView(BookService bookService, InputValidator inputValidator, M
     public void searchBooks() {
         while (true) {
             System.out.println(Color.CYAN + "🔍 Search Books" + Color.RESET);
-//            ViewUtil.showSearchMenu();
+            ViewUtil.showSearchMenu();
             System.out.print(Color.YELLOW + "👉 Enter your choice (1-5): " + Color.RESET);
             String choice = inputValidator.input().nextLine().trim();
             List<Book> results;
@@ -358,7 +380,23 @@ public record BookView(BookService bookService, InputValidator inputValidator, M
     }
 
     public void borrowBook(Member memberData) {
-        System.out.print(Color.CYAN + "🗑️ Enter Book ID to borrow: " + Color.RESET);
+        if (Objects.equals(memberData.getMembershipType(), "Bronze")) {
+            if (borrowService.borrowCount(memberData.getName()) >= 3) {
+                System.out.println(Color.BOLD_RED + "\uD83D\uDE4F Please upgrade your membership to borrow more book" + Color.RESET);
+                return;
+            }
+        } else if (Objects.equals(memberData.getMembershipType(), "Silver")) {
+            if (borrowService.borrowCount(memberData.getName()) >= 5) {
+                System.out.println(Color.BOLD_RED + "\uD83D\uDE4F Please upgrade your membership to borrow more book" + Color.RESET);
+                return;
+            }
+        } else if (Objects.equals(memberData.getMembershipType(), "Gold")) {
+            if (borrowService.borrowCount(memberData.getName()) >= 10) {
+                System.out.println(Color.BOLD_RED + "\uD83D\uDE4F Please upgrade your membership to borrow more book" + Color.RESET);
+                return;
+            }
+        }
+        System.out.print(Color.CYAN + "👉 Enter Book ID to borrow: " + Color.RESET);
         String id = inputValidator.input().nextLine().trim();
         Book existing = bookService.findId(id);
         if (existing == null) {
@@ -389,7 +427,7 @@ public record BookView(BookService bookService, InputValidator inputValidator, M
         }
         existing.setQuantity(existing.getQuantity() - 1);
         if (existing.getQuantity() >= 0) {
-            BorrowRecord newBorrowRecord = new BorrowRecord(memberData.getName(), existing.getTitle(), LocalDate.now(), LocalDate.now().plusDays(7));
+            BorrowRecord newBorrowRecord = new BorrowRecord(memberData.getName(), existing.getTitle(), existing.getCategory(), LocalDate.now(), LocalDate.now().plusDays(7));
             borrowService.addBorrowRecord(newBorrowRecord);
             System.out.println(Color.BOLD_GREEN + "✅ Book borrowed successfully!" + Color.RESET);
         } else {
@@ -444,18 +482,20 @@ public record BookView(BookService bookService, InputValidator inputValidator, M
     }
 
     private Table buildBorrowTable(List<BorrowRecord> borrowRecords, int startIndex, int endIndex) {
-        Table table = new Table(4, BorderStyle.UNICODE_ROUND_BOX_WIDE, ShownBorders.ALL);
+        Table table = new Table(5, BorderStyle.UNICODE_ROUND_BOX_WIDE, ShownBorders.ALL);
         CellStyle center = new CellStyle(CellStyle.HorizontalAlign.center);
         table.addCell(Color.BOLD + "Member Name" + Color.RESET, center);
         table.addCell(Color.BOLD + "Book Title" + Color.RESET, center);
+        table.addCell(Color.BOLD + "Book Category" + Color.RESET, center);
         table.addCell(Color.BOLD + "Borrow Date" + Color.RESET, center);
         table.addCell(Color.BOLD + "Return Date" + Color.RESET, center);
         for (int i = startIndex; i < endIndex; i++) {
             BorrowRecord b = borrowRecords.get(i);
-            table.addCell(Color.BOLD_GREEN + b.getMemberName() + Color.RESET, center);
-            table.addCell(Color.BOLD_GREEN + b.getBookName() + Color.RESET, center);
-            table.addCell(Color.BOLD_GREEN + b.getBorrowAt() + Color.RESET, center);
-            table.addCell(Color.BOLD_GREEN + b.getWillReturn() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + b.memberName() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + b.bookName() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + b.bookCategory() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + b.borrowAt() + Color.RESET, center);
+            table.addCell(Color.BOLD_GREEN + b.willReturn() + Color.RESET, center);
         }
         return table;
     }
@@ -490,7 +530,7 @@ public record BookView(BookService bookService, InputValidator inputValidator, M
     private int getBorrowedCount(String bookName, BorrowService borrowService) {
         int count = 0;
         for (BorrowRecord br : borrowService.getAllBorrowRecord()) {
-            if (Objects.equals(br.getBookName(), bookName)) {
+            if (Objects.equals(br.bookName(), bookName)) {
                 count += 1;
             }
         }
@@ -571,7 +611,7 @@ public record BookView(BookService bookService, InputValidator inputValidator, M
         }
     }
 
-    public void topBorrowedBooks(BorrowService borrowService) {
+    public void top1BorrowedBooks(BorrowService borrowService) {
 
         List<Map.Entry<String, Integer>> sortedList = getEntries(borrowService);
         sortedList.sort((a, b) -> b.getValue() - a.getValue());
@@ -591,16 +631,29 @@ public record BookView(BookService bookService, InputValidator inputValidator, M
             System.out.println(Color.BOLD_RED + "No Book borrowed!!" + Color.RESET);
             return;
         }
-
-        // TOP 3
-        tableTop3.addCell(Color.BOLD_CYAN + "🔥 Top 3 Borrowed Book" + Color.RESET, titleStyle);
-        for (int i = 0; i < Math.min(3, sortedList.size()); i++) {
-            var entry = sortedList.get(i);
-            tableTop3.addCell(Color.BOLD_GREEN + entry.getKey() + " → " + entry.getValue() + " times" + Color.RESET, titleStyle);
-        }
-        System.out.println(tableTop3.render());
         System.out.println(Color.YELLOW + "⚡️ Press ENTER to exit..." + Color.RESET);
         inputValidator.input().nextLine();
+    }
+    
+    public void top3CategoryBorrow(BorrowService borrowService) {
+        List<Map.Entry<String, Integer>> sortedList = getEntries2(borrowService);
+        sortedList.sort((a, b) -> b.getValue() - a.getValue());
+        Table table = getTable(sortedList);
+        System.out.println(table.render());
+        System.out.println(Color.YELLOW + "⚡️ Press ENTER to exit..." + Color.RESET);
+        inputValidator.input().nextLine();
+    }
+
+    private static Table getTable(List<Map.Entry<String, Integer>> sortedList) {
+        Table table = new Table(1, BorderStyle.UNICODE_ROUND_BOX_WIDE);
+        table.setColumnWidth(0, 35, 65);
+        CellStyle titleStyle = new CellStyle(CellStyle.HorizontalAlign.center);
+        table.addCell(Color.BOLD_CYAN + "🔥 Top 3 Borrowed Book by Category" + Color.RESET, titleStyle);
+        for (int i = 0; i < Math.min(3, sortedList.size()); i++) {
+            var entry = sortedList.get(i);
+            table.addCell(Color.BOLD_GREEN + entry.getKey() + " → " + entry.getValue() + " times" + Color.RESET, titleStyle);
+        }
+        return table;
     }
 
     private static List<Map.Entry<String, Integer>> getEntries(BorrowService borrowService) {
@@ -610,8 +663,23 @@ public record BookView(BookService bookService, InputValidator inputValidator, M
         Map<String, Integer> borrowCount = new HashMap<>();
         for (BorrowRecord record : records) {
             borrowCount.put(
-                    record.getBookName(),
-                    borrowCount.getOrDefault(record.getBookName(), 0) + 1
+                    record.bookName(),
+                    borrowCount.getOrDefault(record.bookName(), 0) + 1
+            );
+        }
+
+        // Sort by highest borrow count
+        return new ArrayList<>(borrowCount.entrySet());
+    }
+    private static List<Map.Entry<String, Integer>> getEntries2(BorrowService borrowService) {
+        List<BorrowRecord> records = borrowService.getAllBorrowRecord();
+
+        // Count frequency
+        Map<String, Integer> borrowCount = new HashMap<>();
+        for (BorrowRecord record : records) {
+            borrowCount.put(
+                    record.bookCategory(),
+                    borrowCount.getOrDefault(record.bookCategory(), 0) + 1
             );
         }
 
