@@ -15,27 +15,26 @@ public class MemberServiceImpl implements MemberService {
     private final List<Member> members = new ArrayList<>();
 
     public MemberServiceImpl() {
-        LocalDate membershipDate = LocalDate.of(2022, 1, 1);
-        LocalDate expiryDate = LocalDate.of(2022, 12, 31);
-        members.add(new Member("John", "123 Main St.", "123-456-7890", "pisethmao2002@gmail.com", membershipDate, expiryDate, "Gold", MemberStatus.ACTIVE));
-        members.add(new Member("Jane", "456 Main St.", "987-654-3210", "menglongkeo07@gmail.com", membershipDate, expiryDate, "Silver", MemberStatus.EXPIRED));
-        members.add(new Member("Bob", "789 Main St.", "098-765-4321", "chanchhay07@gmail.com", membershipDate, expiryDate, "Bronze", MemberStatus.INACTIVE));
-        members.add(new Member("Alice", "101 Main St.", "111-222-3333", "kompheakyan@gmail.com", membershipDate, expiryDate, "Gold", MemberStatus.SUSPENDED));
-        members.add(new Member("Charlie", "202 Main St.", "222-333-4444", "pisethmao2002@gmail.com", membershipDate, expiryDate, "Silver", MemberStatus.ACTIVE));
-        members.add(new Member("David", "303 Main St.", "333-444-5555", "menglongkeo07@gmail.com", membershipDate, expiryDate, "Bronze", MemberStatus.ACTIVE));
+        members.add(new Member("John", "123 Main St.", "123-456-7890", "pisethmao2002@gmail.com", LocalDate.now(), LocalDate.now().plusYears(10), "Gold", MemberStatus.ACTIVE));
+        members.add(new Member("Jane", "456 Main St.", "987-654-3210", "menglongkeo07@gmail.com", LocalDate.of(2006, 1, 1), LocalDate.of(2006, 1, 1), "Silver", MemberStatus.ACTIVE));
+        members.add(new Member("Bob", "789 Main St.", "098-765-4321", "chanchhay07@gmail.com", LocalDate.of(2022, 10, 10), LocalDate.of(2022, 10, 10).plusYears(10), "Bronze", MemberStatus.INACTIVE));
+        members.add(new Member("Alice", "101 Main St.", "111-222-3333", "kompheakyan@gmail.com", LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 1).plusYears(10), "Gold", MemberStatus.SUSPENDED));
+        members.add(new Member("Charlie", "202 Main St.", "222-333-4444", "pisethmao2002@gmail.com", LocalDate.of(2020, 10, 10), LocalDate.of(2020, 10, 10).plusYears(10), "Silver", MemberStatus.ACTIVE));
+        members.add(new Member("David", "303 Main St.", "333-444-5555", "menglongkeo07@gmail.com", LocalDate.of(2021, 1, 1), LocalDate.of(2021, 1, 1).plusYears(10), "Bronze", MemberStatus.ACTIVE));
     }
 
     @Override
     public void addMember(String name, String address, String phoneNumber, String email, LocalDate membershipDate, LocalDate expiryDate, String membershipType, MemberStatus status) {
         Member member = new Member(name, address, phoneNumber, email, membershipDate, expiryDate, membershipType, status);
         members.add(member);
-        System.out.println(Color.BOLD_GREEN + "✅ Nem member added successfully! " + member.getName() + Color.RESET);
+        System.out.println(Color.BOLD_GREEN + "✅ New member added successfully! " + member.getName() + Color.RESET);
     }
 
     @Override
     public List<Member> getAllMembers(int page, int pageSize) {
         int startIndex = (page - 1) * pageSize;
         int endIndex = Math.min(startIndex + pageSize, members.size());
+        members.forEach(this::updateMemberStatus);
         return members.subList(startIndex, endIndex);
     }
 
@@ -96,6 +95,16 @@ public class MemberServiceImpl implements MemberService {
         if (!ascending) {
             comparator = comparator.reversed();
         }
+        members.forEach(this::updateMemberStatus);
         return members.stream().sorted(comparator).toList();
     }
+
+    private void updateMemberStatus(Member member) {
+        LocalDate today = LocalDate.now();
+
+        if (today.isAfter(member.getExpiryDate())) {
+            member.setStatus(MemberStatus.EXPIRED);
+        }
+    }
+
 }

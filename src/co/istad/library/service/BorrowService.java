@@ -8,5 +8,6 @@ public interface BorrowService {
     List<BorrowRecord> getAllBorrowRecord();
     void addBorrowRecord(BorrowRecord borrowRecord);
     boolean hasBorrow(String memberName, String bookName);
+    int borrowCount(String memberName);
     void returnBook(String memberName, String bookName);
 }

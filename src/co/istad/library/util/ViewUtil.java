@@ -82,8 +82,6 @@ public class ViewUtil {
                     bookView.deleteBook();
                 }
                 case "4" -> {
-                    System.out.println(Color.BOLD_PURPLE + "🔍 Search Books" + Color.RESET);
-                    ViewUtil.showSearchMenu();
                     bookView.searchBooks();
                     continue;
                 }
@@ -163,8 +161,9 @@ public class ViewUtil {
         table.addCell(Color.YELLOW + "2. Total Members" + Color.RESET);
         table.addCell(Color.YELLOW + "3. Total Borrow Books" + Color.RESET);
         table.addCell(Color.YELLOW + "4. Available Books" + Color.RESET);
-        table.addCell(Color.YELLOW + "5. Top Borrowed Books" + Color.RESET);
-        table.addCell(Color.RED + "6. Back to Main Menu" + Color.RESET);
+        table.addCell(Color.YELLOW + "5. Top 1 Borrowed Books" + Color.RESET);
+        table.addCell(Color.YELLOW + "6. Top 3 Borrowed Books by Category" + Color.RESET);
+        table.addCell(Color.RED + "7. Back to Main Menu" + Color.RESET);
         System.out.println(table.render());
     }
 
@@ -266,11 +265,15 @@ public class ViewUtil {
                     bookView.navigatePagination();
                     continue;
                 }case "5" -> {
-                    System.out.println(Color.YELLOW + "📕 You selected: Top Borrowed Books" + Color.RESET);
-                    bookView.topBorrowedBooks(borrowService);
+                    System.out.println(Color.YELLOW + "📕 You selected: Top 1 Borrowed Books" + Color.RESET);
+                    bookView.top1BorrowedBooks(borrowService);
+                    continue;
+                }case "6" -> {
+                    System.out.println(Color.YELLOW + "📕 You selected: Top 3 Borrowed Books by Category" + Color.RESET);
+                    bookView.top3CategoryBorrow(borrowService);
                     continue;
                 }
-                case "6" -> {
+                case "7" -> {
                     System.out.println(Color.BOLD_CYAN + "🔙 Returning to Main Menu..." + Color.RESET);
                     return;
                 }
