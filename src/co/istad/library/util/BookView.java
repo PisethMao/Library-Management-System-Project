@@ -668,7 +668,6 @@ public record BookView(BookService bookService, InputValidator inputValidator, M
             );
         }
 
-        // Sort by highest borrow count
         return new ArrayList<>(borrowCount.entrySet());
     }
     private static List<Map.Entry<String, Integer>> getEntries2(BorrowService borrowService) {
