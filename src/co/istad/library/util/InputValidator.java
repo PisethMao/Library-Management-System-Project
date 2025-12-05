@@ -133,6 +133,21 @@ public record InputValidator(Scanner input) {
         }
     }
 
+    public String readOptionalPhone(String oldValue, String message) {
+        while (true) {
+            System.out.print(message);
+            String phone = input.nextLine().trim();
+            if (phone.isEmpty()) {
+                return oldValue;
+            }
+            if (!phone.matches("[0-9+\\- ]+")) {
+                System.out.println(Color.RED + "❌ Phone number can only contain digits, '+', '-' and spaces!" + Color.RESET);
+                continue;
+            }
+            return phone;
+        }
+    }
+
     public String readEmail(String message) {
         while (true) {
             System.out.print(message);
@@ -150,6 +165,18 @@ public record InputValidator(Scanner input) {
             return email;
         }
     }
+    public String readOptionalEmail(String oldValue, String message) {
+        while (true) {
+            System.out.print(message);
+            String email = input.nextLine().trim();
+            if (email.isEmpty()) return oldValue;
+            if (!email.matches("^[\\w._%+-]+@[\\w.-]+\\.[A-Za-z]{2,}$")) {
+                System.out.println(Color.RED + "❌ Invalid email format!" + Color.RESET);
+                continue;
+            }
+            return email;
+        }
+    }
 
     public LocalDate readDate(String message) {
         while (true) {
@@ -160,6 +187,20 @@ public record InputValidator(Scanner input) {
             if (date.isEmpty()) {
                 System.out.println(Color.RED + "❌ Date cannot be empty!" + Color.RESET);
                 continue;
+            }
+            try {
+                return LocalDate.parse(date);
+            } catch (DateTimeParseException e) {
+                System.out.println(Color.RED + "❌ Date must be in format YYYY-MM-DD!" + Color.RESET);
+            }
+        }
+    }
+    public LocalDate readOptionalDate(LocalDate oldValue, String message) {
+        while (true) {
+            System.out.print(message);
+            String date = input.nextLine().trim();
+            if (date.isEmpty()) {
+                return oldValue;
             }
             try {
                 return LocalDate.parse(date);

@@ -131,15 +131,38 @@ public class MemberViewUtil {
                         break;
                     }
                     Member m = memberOpt.get();
+                    System.out.println(Color.YELLOW + "(Press ENTER to keep the old value)" + Color.RESET);
                     String newName = inputValidator.readOptionalText(m.getName(), Color.BOLD_CYAN + "👤 New name");
                     String newAddress = inputValidator.readOptionalText(m.getAddress(), Color.BOLD_CYAN + "🏠 New address");
-                    String newPhone = inputValidator.readPhone(Color.BOLD_CYAN + "📞 New phone (" + m.getPhoneNumber() + "): ");
-                    String newEmail = inputValidator.readEmail(Color.BOLD_CYAN + "✉️ New email (" + m.getEmail() + "): ");
-                    LocalDate newMembershipDate = inputValidator.readDate(Color.BOLD_CYAN + "📅 New membership date (" + m.getMembershipDate() + "): ");
-                    LocalDate newExpiryDate = inputValidator.readExpiryDate(Color.BOLD_CYAN + "⏰ New expiry date (" + m.getExpiryDate() + "): ", m.getMembershipDate());
-                    String newType = inputValidator.readText(Color.BOLD_CYAN + "🥇 New membership type (" + m.getMembershipType() + "): ");
+                    String newPhone = inputValidator.readOptionalPhone(m.getPhoneNumber(), Color.BOLD_CYAN + "📞 New phone (" + m.getPhoneNumber() + "): ");
+                    String newEmail = inputValidator.readOptionalEmail(m.getEmail(), Color.BOLD_CYAN + "✉️ New email (" + m.getEmail() + "): ");
+                    LocalDate newMembershipDate;
+                    while (true) {
+                        newMembershipDate = inputValidator.readOptionalDate(m.getMembershipDate(), Color.BOLD_CYAN + "📅 New membership date (" + m.getMembershipDate() + "): ");
+                        if (newMembershipDate.isBefore(LocalDate.now()) || newMembershipDate.equals(LocalDate.now())) {
+                            break;
+                        }
+                        System.out.println(Color.BOLD_RED + "❌ Invalid membership date" + Color.RESET);
+                    }
+                    LocalDate newExpiryDate = newMembershipDate.plusYears(10);
+                    String newMembershipType;
+                    while (true) {
+                        String newInput = inputValidator.readOptionalText(m.getMembershipType(), Color.BOLD_CYAN +
+                                "🥇 New membership type "
+                        + Color.RESET).trim();
+
+                        String normalized = newInput.substring(0, 1).toUpperCase() + newInput.substring(1);
+
+                        if (normalized.equals("Bronze") || normalized.equals("Gold") || normalized.equals("Silver")) {
+                            newMembershipType = normalized;
+                            break;
+                        }
+
+                        System.out.println(Color.BOLD_RED + "❌ Invalid membership type!" + Color.RESET);
+                    }
+
                     MemberStatus newStatus = inputValidator.readStatus(Color.BOLD_CYAN + "✅ New status (" + m.getStatus() + "): " + Color.RESET);
-                    boolean updated = memberService.updateMember(memberId, newName, newAddress, newPhone, newEmail, newMembershipDate, newExpiryDate, newType, newStatus);
+                    boolean updated = memberService.updateMember(memberId, newName, newAddress, newPhone, newEmail, newMembershipDate, newExpiryDate, newMembershipType, newStatus);
                     if (updated) {
                         System.out.println(Color.BOLD_GREEN + "✅ Member updated successfully!" + Color.RESET);
                     } else {
